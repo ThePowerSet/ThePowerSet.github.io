@@ -2,7 +2,7 @@
 layout: page
 title: Volatility Forecasting
 description: Compared GARCH out-of-sample predictive accuracy with ML models for Euro Stoxx 50.
-img: 
+img:
 importance: 2
 category: Academic Projects
 ---

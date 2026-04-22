@@ -2,7 +2,7 @@
 layout: page
 title: SOFR OIS Yield Curve Construction
 description: A full pipeline to construct the SOFR OIS zero-coupon yield curve using Python.
-img: 
+img:
 importance: 1
 category: Academic Projects
 ---

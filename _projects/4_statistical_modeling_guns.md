@@ -2,7 +2,7 @@
 layout: page
 title: Statistical Modeling - Guns Panel Data
 description: Analyzed U.S. Guns panel data applying regression methods for explanatory purposes.
-img: 
+img:
 importance: 4
 category: Academic Projects
 ---

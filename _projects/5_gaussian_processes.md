@@ -2,7 +2,7 @@
 layout: page
 title: Gaussian Processes
 description: Collaborating on Gaussian Process Regression project, implementing custom kernels in GPFlow.
-img: 
+img:
 importance: 5
 category: Academic Projects
 ---

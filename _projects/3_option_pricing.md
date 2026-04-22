@@ -2,7 +2,7 @@
 layout: page
 title: Option Pricing and Hedging with Greeks
 description: Derived Black–Scholes–Merton formula and implemented hedging strategies.
-img: 
+img:
 importance: 3
 category: Academic Projects
 ---

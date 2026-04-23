@@ -14,3 +14,6 @@ Gemfile.lock
 node_modules/
 vendor
 Omar_cv.mdgem_actions.md
+.gemini/skills/
+.gemini/skills/
+*.skill

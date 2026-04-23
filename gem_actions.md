@@ -11,23 +11,21 @@ Questo file riassume le operazioni effettuate per la configurazione del sito [th
 ## 2. Popolamento Contenuti (da CV)
 
 - **CV Digitale**: Tradotto il file `Omar_cv.md` nel formato YAML richiesto dal tema in `_data/cv.yml`.
+- **CV PDF**: Caricato il file originale `cv.pdf` in `assets/pdf/omar_tronelli_cv.pdf` e collegato ai pulsanti di download del sito.
 - **Biografia**: Aggiornata la pagina `about.md` con il profilo professionale focalizzato su Financial Risk e Machine Learning.
-- **Progetti**: Creati 5 progetti accademici in `_projects/` con i dettagli tecnici estratti dal CV:
-  1. SOFR OIS Yield Curve Construction
-  2. Volatility Forecasting
-  3. Option Pricing and Hedging with Greeks
-  4. Statistical Modeling - Guns Panel Data
-  5. Gaussian Processes
+- **Progetti**: Creati 5 progetti accademici in `_projects/` con i dettagli tecnici estratti dal CV.
 
-## 3. Pulizia Navigazione e Interfaccia
+## 3. Pulizia e Asset
 
-- **Menu**: Nascoste le pagine Blog, Publications, Teaching, News, e Repositories dalla navbar (impostato `nav: false`).
-- **Categorie Progetti**: Aggiornato `_pages/projects.md` per visualizzare correttamente la categoria "Academic Projects".
+- **Navigazione**: Nascoste le pagine superflue (Blog, Teaching, ecc.) per focalizzare il sito su About, Projects e CV.
+- **Rimozione Asset Demo**: Eliminati tutti i post, news, immagini, video e audio di esempio del template originale (Albert Einstein) per rendere il repository pulito e professionale.
+- **Foto Profilo**: Configurato il logo "F" in formato PNG come immagine del profilo stabile.
 
-## 4. Risoluzione Problemi Tecnici (Fixes)
+## 4. Automazione e Qualità del Codice
 
-- **Prettier**: Installate le dipendenze Node.js ed eseguita la formattazione automatica (`npx prettier . --write`) per superare i controlli falliti su GitHub Actions.
-- **GitHub Pages**: Fornita assistenza per la configurazione del ramo di deploy (`gh-pages`) e dei permessi di scrittura per le Actions.
+- **Prettier**: Risolti i fallimenti dei job GitHub Actions tramite formattazione globale del codice.
+- **Pre-commit Hooks**: Installato e configurato `pre-commit` con Prettier. Da ora, ogni commit locale eseguirà automaticamente il controllo della formattazione, evitando errori su GitHub.
+- **Ambiente Locale**: Configurato lo strumento per girare sul Python 3.12.2 dell'utente tramite `pyenv`.
 
 ---
 

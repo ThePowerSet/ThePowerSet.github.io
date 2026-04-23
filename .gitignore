@@ -13,7 +13,8 @@ assets/rendercv/rendercv_output/*.typ
 Gemfile.lock
 node_modules/
 vendor
-Omar_cv.mdgem_actions.md
+Omar_cv.md
+gem_actions.md
 .gemini/skills/
 .gemini/skills/
 *.skill

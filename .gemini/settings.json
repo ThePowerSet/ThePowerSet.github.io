@@ -11,5 +11,8 @@
       "TROUBLESHOOTING.md",
       "QUICKSTART.md"
     ]
+  },
+  "skills": {
+    "disabled": []
   }
 }

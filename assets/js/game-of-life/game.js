@@ -247,13 +247,25 @@ function saveInitialState() {
 // RENDERING
 // ============================================================================
 
+function getThemeColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue("--global-theme-color").trim() || "#7CFF8A";
+}
+
+function getBgColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue("--global-bg-color").trim() || "#07110c";
+}
+
+function getGridColor() {
+  return getComputedStyle(document.documentElement).getPropertyValue("--global-divider-color").trim() || "rgba(124, 255, 138, 0.12)";
+}
+
 function render() {
   const w = canvas.clientWidth;
   const h = canvas.clientHeight;
   const gridW = cols * cellSize;
   const gridH = rows * cellSize;
 
-  ctx.fillStyle = "#07110c";
+  ctx.fillStyle = getBgColor();
   ctx.fillRect(0, 0, w, h);
 
   ctx.save();
@@ -300,7 +312,7 @@ function drawGrid() {
 }
 
 function drawCells() {
-  ctx.fillStyle = "#7CFF8A";
+  ctx.fillStyle = getThemeColor();
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       if (currentGrid[r][c] === 1) {

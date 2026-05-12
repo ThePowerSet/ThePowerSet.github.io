@@ -8,15 +8,15 @@
     box-sizing: border-box;
   }
 
-  --bg-dark: #07110c;
-  --cell-alive: #7cff8a;
-  --cell-grid: rgba(124, 255, 138, 0.12);
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --btn-primary: #7cff8a;
-  --btn-primary-hover: #5be870;
-  --btn-secondary: #444;
-  --btn-secondary-hover: #555;
+  --bg-dark: var(--global-bg-color);
+  --cell-alive: var(--global-theme-color);
+  --cell-grid: var(--global-divider-color);
+  --text-primary: var(--global-text-color);
+  --text-secondary: var(--global-text-color-light);
+  --btn-primary: var(--global-theme-color);
+  --btn-primary-hover: var(--global-hover-color);
+  --btn-secondary: var(--global-card-bg-color);
+  --btn-secondary-hover: var(--global-code-bg-color);
   --border-radius: 4px;
   --transition: all 0.2s ease;
 
@@ -233,7 +233,7 @@
     border-radius: 50%;
     background: var(--cell-alive);
     cursor: pointer;
-    box-shadow: 0 0 8px rgba(124, 255, 138, 0.5);
+    box-shadow: 0 0 8px var(--cell-alive);
   }
 
   .slider::-moz-range-thumb {
@@ -243,7 +243,7 @@
     background: var(--cell-alive);
     cursor: pointer;
     border: none;
-    box-shadow: 0 0 8px rgba(124, 255, 138, 0.5);
+    box-shadow: 0 0 8px var(--cell-alive);
   }
 
   .generation-counter {

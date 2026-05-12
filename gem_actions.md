@@ -27,3 +27,9 @@ Questo file riassume le operazioni effettuate per la configurazione del sito [th
 
 ---
 *Ultimo aggiornamento: Martedì 21 Aprile 2026*
+
+## 5. Implementazione Game of Life
+- **Creazione Pagina Dedicata**: Creata la pagina _pages/game-of-life.md integrata con il layout di al-folio.
+- **Isolamento CSS e HTML**: Implementato _includes/game_of_life.html e isolato lo stile CSS in assets/css/game-of-life.scss per evitare conflitti con Bootstrap.
+- **Integrazione Script**: Copiati e importati game.js, patterns.js e l'immagine examples.png all'interno della directory assets/.
+- **Prettier**: Eseguito prettier per convalidare il formato del codice secondo gli standard della CI.

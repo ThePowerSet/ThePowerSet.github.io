@@ -37,3 +37,6 @@ Questo file riassume le operazioni effettuate per la configurazione del sito [th
 ## 6. Configurazione UI/UX
 - **Rimozione Ricerca**: Disabilitata la barra di ricerca globale del sito impostando search_enabled: false in _config.yml.
 - **Allineamento Colori Game of Life**: Aggiornati il file SCSS e JavaScript del Game of Life per non utilizzare colori hardcoded, ma per ereditare invece le variabili dinamiche di al-folio (--global-bg-color, --global-theme-color, ecc.), permettendo la corretta visualizzazione sia nel light che nel dark mode.
+
+## 7. Ottimizzazione Layout Game of Life
+- **Rimozione Doppio Titolo**: Modificato il frontmatter in _pages/game-of-life.md passando da layout: page a layout: default. Questo rimuove l'intestazione predefinita di Jekyll (post-header) per lasciare esclusivamente l'header custom del gioco e spostarlo più in alto nella pagina.

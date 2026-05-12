@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: default
 title: Game of Life
 permalink: /game-of-life/
 nav: true

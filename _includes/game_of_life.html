@@ -1,0 +1,94 @@
+<div class="container">
+  <!-- Header -->
+  <header class="header">
+    <h1 class="title">Game of Life</h1>
+    <p class="subtitle">Pick one, press play, or create your own.</p>
+  </header>
+
+  <!-- Controls Area -->
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 25px" class="desktop-controls">
+    <!-- Row 1: Dropdown & Rules -->
+    <div style="display: flex; gap: 15px; width: fit-content" class="controls-row-hard">
+      <select id="infoDropdown" class="info-dropdown" aria-label="Pattern Information" style="width: 260px">
+        <option value="">Learn About Patterns</option>
+        <option value="still-life">Still Lifes</option>
+        <option value="oscillators">Oscillators</option>
+        <option value="spaceships">Spaceships</option>
+        <option value="guns">Guns & Methuselahs</option>
+      </select>
+      <button id="rulesBtn" class="btn btn-secondary" style="width: 110px">Rules</button>
+    </div>
+
+    <!-- Row 2: Generate & Random -->
+    <div style="display: flex; gap: 15px; width: fit-content; position: relative" class="controls-row-hard">
+      <button id="generatePatternBtn" class="btn btn-primary" style="width: 260px">Generate Pattern</button>
+      <button id="randomBtn" class="btn btn-secondary" style="width: 110px">Random</button>
+
+      <!-- Pattern Label outside the flow -->
+      <div
+        class="pattern-label"
+        style="position: absolute; left: 100%; margin-left: 15px; top: 50%; transform: translateY(-50%); white-space: nowrap"
+      >
+        <span>Pattern: </span>
+        <span id="currentPatternName">Empty</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Box (Hidden by default) -->
+  <div id="infoBox" class="info-box hidden"></div>
+
+  <!-- Canvas -->
+  <div class="canvas-wrapper">
+    <canvas id="gameCanvas" class="game-canvas"></canvas>
+  </div>
+
+  <!-- Simulation Controls -->
+  <div class="simulation-controls">
+    <button id="playBtn" class="btn btn-action">Play</button>
+    <button id="stepBtn" class="btn btn-action">Step</button>
+    <button id="restartBtn" class="btn btn-action">Restart</button>
+    <button id="clearBtn" class="btn btn-action">Clear</button>
+  </div>
+
+  <!-- Speed Control & Stats -->
+  <div class="speed-stats">
+    <div class="speed-control">
+      <label for="speedSlider">Speed:</label>
+      <input id="speedSlider" type="range" min="10" max="500" value="150" class="slider" aria-label="Simulation speed" />
+    </div>
+    <div class="zoom-control">
+      <label for="zoomSlider">Zoom:</label>
+      <input id="zoomSlider" type="range" min="0.1" max="2.5" step="0.05" value="2.0" class="slider" aria-label="Grid zoom" />
+    </div>
+    <div class="generation-counter">Generation: <span id="generationCount">0</span></div>
+  </div>
+</div>
+
+<!-- Rules Modal -->
+<div id="rulesModal" class="modal hidden">
+  <div class="modal-content rules-modal-content">
+    <span class="close-btn" id="closeRulesBtn">&times;</span>
+    <div class="rules-layout">
+      <div class="rules-text">
+        <h2>Explanation</h2>
+        <p>
+          The Game of Life is a cellular automaton devised by John Horton Conway in 1970. It is a zero-player game, meaning its evolution is
+          determined by its initial state.
+        </p>
+
+        <h3>Rules</h3>
+        <ol>
+          <li>Any live cell with fewer than two live neighbours dies (underpopulation).</li>
+          <li>Any live cell with more than three live neighbours dies (overpopulation).</li>
+          <li>Any live cell with two or three live neighbours lives on.</li>
+          <li>Any dead cell with exactly three live neighbours becomes a live cell (reproduction).</li>
+        </ol>
+        <button class="btn btn-secondary mobile-close-btn" id="mobileCloseRulesBtn">Close</button>
+      </div>
+      <div class="rules-image">
+        <img src="{{ '/assets/img/game-of-life/examples.png' | relative_url }}" alt="Game of Life Examples" />
+      </div>
+    </div>
+  </div>
+</div>

@@ -33,3 +33,7 @@ Questo file riassume le operazioni effettuate per la configurazione del sito [th
 - **Isolamento CSS e HTML**: Implementato _includes/game_of_life.html e isolato lo stile CSS in assets/css/game-of-life.scss per evitare conflitti con Bootstrap.
 - **Integrazione Script**: Copiati e importati game.js, patterns.js e l'immagine examples.png all'interno della directory assets/.
 - **Prettier**: Eseguito prettier per convalidare il formato del codice secondo gli standard della CI.
+
+## 6. Configurazione UI/UX
+- **Rimozione Ricerca**: Disabilitata la barra di ricerca globale del sito impostando search_enabled: false in _config.yml.
+- **Allineamento Colori Game of Life**: Aggiornati il file SCSS e JavaScript del Game of Life per non utilizzare colori hardcoded, ma per ereditare invece le variabili dinamiche di al-folio (--global-bg-color, --global-theme-color, ecc.), permettendo la corretta visualizzazione sia nel light che nel dark mode.

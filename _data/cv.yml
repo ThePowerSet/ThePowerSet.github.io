@@ -18,7 +18,7 @@ cv:
         location: Rome, Italy
         area: Financial Risk and Data Analysis
         studyType: MSc
-        start_date: 2024
+        start_date: Sep 2024
         end_date: Present
         score: "4.0"
         courses: "Quantitative Financial Modeling, Econometrics for Financial Markets, Probability & Stochastic Processes, Machine Learning"
@@ -27,41 +27,40 @@ cv:
         location: Rome, Italy
         area: Economics and Finance
         studyType: BSc
-        start_date: 2021
-        end_date: 2024
-        score: "3.49"
+        start_date: Sep 2021
+        end_date: Oct 2024
+        courses: "Econometrics, Advanced Statistics, Monetary Policy, Financial Intermediaries, EU Institutions and Banking Union"
         highlights:
           - "Thesis: 'Predictive Models for Exchange Rates'"
           - "Supervisor: Prof. Marco Di Pietro"
 
     Projects:
       - name: SOFR OIS Yield Curve Construction
-        summary: Designed and implemented a full pipeline to construct the SOFR OIS zero-coupon yield curve from par swap rates using Python (rateslib).
+        summary: Designed and implemented a full pipeline to construct the SOFR OIS zero-coupon yield curve from par swap rates.
         highlights:
           - Developed a numerical bootstrapping framework to recover discount factors via a bisection root-finding algorithm.
           - Derived zero rates and constructed a smooth, arbitrage-free term structure using log-linear interpolation.
+          - Implemented the complete calibration and visualization workflow in Python (rateslib).
+
+      - name: Option Pricing and Hedging with Greeks
+        summary: Derived the Black–Scholes–Merton option pricing formula using both replication and risk-neutral valuation.
+        highlights:
+          - Analyzed the Greeks and their application in risk management.
+          - Implemented hedging strategies, focusing on Gamma and Theta, and hedge performance for a short gamma trader.
 
       - name: Volatility Forecasting
-        summary: Compared GARCH out-of-sample predictive accuracy with ML models for Euro Stoxx 50.
+        summary: Compared GARCH out-of-sample predictive accuracy, with ML models, for Euro Stoxx 50.
         highlights:
           - Focused on the development of an LSTM neural network.
           - Evaluated the performance of one-step-ahead predictions.
 
-      - name: Option Pricing and Hedging with Greeks
-        summary: Analyzed the Black–Scholes–Merton option pricing formula and its application in risk management.
-        highlights:
-          - Derived the formula using replication and risk-neutral valuation.
-          - Implemented hedging strategies for short gamma traders.
-
-      - name: Statistical Modeling - Guns Panel Data
-        summary: Analyzed U.S. Guns panel data using regression methods for explanatory purposes.
-        highlights:
-          - Implemented cross-validation, LASSO, OLS, and kernel regression.
+      - name: Applied Statistical Modeling
+        summary: Worked on applied statistics projects involving panel-data regression, cross-validation, LASSO model selection, kernel regression, clustering, and multiple regression analysis.
 
       - name: Gaussian Processes
-        summary: Collaborating with Dr Francesca Panero and Dr Sahoko Ishida on Gaussian Process Regression.
+        summary: Collaborating with Dr Francesca Panero and Dr Sahoko Ishida on a project involving Gaussian Process Regression.
         highlights:
-          - Responsible for coding custom kernels in GPFlow (TensorFlow-based library).
+          - Responsible for coding; implemented custom kernels in GPflow (TensorFlow-based library), with the goal of performing model selection.
 
     Skills:
       - name: Programming
@@ -69,7 +68,10 @@ cv:
         keywords: "Python (NumPy, Pandas, TensorFlow, scikit-learn, GPflow), R, C (basic)"
       - name: Tools & Environments
         icon: fa-solid fa-tools
-        keywords: "Git/GitHub, HPC (SLURM)"
+        keywords: "Git/GitHub (version control), High-Performance Computing (HPC) environments with SLURM job scheduling, CLI-based AI coding agents"
+      - name: Leadership, Teamwork & Personal Skills
+        icon: fa-solid fa-users
+        keywords: "Detail-oriented and accurate, strong sense of responsibility and inquisitiveness, proven ability to lead and collaborate effectively within teams, works well under pressure and delivers on tight deadlines"
 
     Languages:
       - name: Italian
@@ -77,7 +79,7 @@ cv:
       - name: English
         summary: "Fluent (C1)"
       - name: Spanish
-        summary: "Basic"
+        summary: "B2"
       - name: Portuguese
         summary: "Basic"
 
@@ -88,6 +90,8 @@ cv:
         icon: fa-solid fa-laptop-code
       - name: Free-diving
         icon: fa-solid fa-water
+      - name: Hiking
+        icon: fa-solid fa-mountain
       - name: Chess
         icon: fa-solid fa-chess-pawn
 

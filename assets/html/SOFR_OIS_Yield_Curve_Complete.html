@@ -22,53 +22,61 @@
         box-sizing: border-box;
       }
 
+      :root {
+        --global-bg-color: #ffffff;
+        --global-text-color: #333333;
+        --global-theme-color: #b509ac;
+        --global-theme-color-dark: #8a0888;
+        --global-divider-color: rgba(0, 0, 0, 0.1);
+        --global-code-bg-color: rgba(181, 9, 172, 0.05);
+        --global-grey-dark: #1c1c1d;
+      }
+
       body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         line-height: 1.6;
-        color: #333;
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: var(--global-text-color);
+        background: var(--global-bg-color);
         min-height: 100vh;
       }
 
       header {
-        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        background: linear-gradient(135deg, var(--global-theme-color) 0%, var(--global-theme-color-dark) 100%);
         color: white;
-        padding: 2rem 0;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        position: sticky;
-        top: 0;
-        z-index: 100;
+        padding: 3rem 0;
+        box-shadow: 0 2px 4px var(--global-divider-color);
       }
 
       .header-content {
-        max-width: 1200px;
+        max-width: 900px;
         margin: 0 auto;
         padding: 0 2rem;
       }
 
       h1 {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
         margin-bottom: 0.5rem;
-        font-weight: 700;
+        font-weight: 600;
+        letter-spacing: -0.5px;
       }
 
       .subtitle {
-        font-size: 1.1rem;
-        opacity: 0.95;
+        font-size: 1rem;
+        opacity: 0.9;
         font-weight: 300;
+        letter-spacing: 0.3px;
       }
 
       nav {
-        background: rgba(0, 0, 0, 0.05);
-        padding: 1rem 0;
-        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-        position: sticky;
-        top: 120px;
-        z-index: 99;
+        background: transparent;
+        padding: 1.5rem 0;
+        border-top: 1px solid var(--global-divider-color);
+        border-bottom: 1px solid var(--global-divider-color);
+        margin: 2rem 0;
       }
 
       nav ul {
-        max-width: 1200px;
+        max-width: 900px;
         margin: 0 auto;
         padding: 0 2rem;
         list-style: none;
@@ -78,55 +86,62 @@
       }
 
       nav a {
-        color: white;
+        color: var(--global-theme-color);
         text-decoration: none;
-        padding: 0.5rem 1rem;
-        background: rgba(255, 255, 255, 0.1);
+        padding: 0.4rem 0.8rem;
+        background: transparent;
+        border: 1px solid var(--global-theme-color);
         border-radius: 4px;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         display: inline-block;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
+        font-weight: 500;
       }
 
       nav a:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
+        background: var(--global-theme-color);
+        color: white;
       }
 
       main {
-        max-width: 1200px;
-        margin: 2rem auto;
+        max-width: 900px;
+        margin: 0 auto;
         padding: 0 2rem;
       }
 
       section {
-        background: white;
-        padding: 2.5rem;
+        background: transparent;
+        padding: 2rem 0;
         margin-bottom: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 0;
+        box-shadow: none;
       }
 
       h2 {
-        font-size: 2rem;
+        font-size: 1.8rem;
+        margin-top: 2.5rem;
         margin-bottom: 1.5rem;
-        color: #1e3c72;
-        border-bottom: 3px solid #2a5298;
-        padding-bottom: 0.5rem;
+        color: var(--global-theme-color);
+        border-bottom: 2px solid var(--global-theme-color);
+        padding-bottom: 0.75rem;
+        font-weight: 600;
+        letter-spacing: -0.3px;
       }
 
       h3 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         margin-top: 1.5rem;
         margin-bottom: 1rem;
-        color: #2a5298;
+        color: var(--global-theme-color-dark);
+        font-weight: 600;
       }
 
       h4 {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
         margin-top: 1.2rem;
         margin-bottom: 0.8rem;
-        color: #1e3c72;
+        color: var(--global-text-color);
+        font-weight: 600;
       }
 
       p {
@@ -135,42 +150,43 @@
       }
 
       .key-insight {
-        background: #e3f2fd;
-        border-left: 4px solid #2196f3;
+        background: rgba(181, 9, 172, 0.05);
+        border-left: 4px solid var(--global-theme-color);
         padding: 1.2rem;
         margin: 1.5rem 0;
         border-radius: 4px;
       }
 
       .key-insight strong {
-        color: #1565c0;
+        color: var(--global-theme-color);
       }
 
       .math-block {
-        background: #f8f9fa;
+        background: var(--global-code-bg-color);
         padding: 1.5rem;
         margin: 1.5rem 0;
         border-radius: 4px;
-        border: 1px solid #e9ecef;
+        border: 1px solid var(--global-divider-color);
         overflow-x: auto;
       }
 
       code {
-        background: #f4f4f4;
+        background: var(--global-code-bg-color);
         padding: 0.2rem 0.4rem;
         border-radius: 3px;
-        font-family: "Courier New", monospace;
+        font-family: "Monaco", "Courier New", monospace;
         font-size: 0.9em;
+        color: var(--global-text-color);
       }
 
       pre {
-        background: #282c34;
-        color: #abb2bf;
+        background: var(--global-grey-dark);
+        color: #e0e0e0;
         padding: 1.5rem;
         border-radius: 6px;
         overflow-x: auto;
         margin: 1.5rem 0;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         line-height: 1.5;
       }
 
@@ -180,30 +196,17 @@
         color: inherit;
       }
 
-      .hljs-attr {
-        color: #e06c75;
-      }
-      .hljs-string {
-        color: #98c379;
-      }
-      .hljs-number {
-        color: #d19a66;
-      }
-      .hljs-literal {
-        color: #56b6c2;
-      }
-
       table {
         width: 100%;
         border-collapse: collapse;
         margin: 1.5rem 0;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 3px var(--global-divider-color);
         border-radius: 6px;
         overflow: hidden;
       }
 
       th {
-        background: #1e3c72;
+        background: var(--global-theme-color);
         color: white;
         padding: 1rem;
         text-align: left;
@@ -212,11 +215,11 @@
 
       td {
         padding: 0.8rem 1rem;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--global-divider-color);
       }
 
       tr:hover {
-        background: #f8f9fa;
+        background: var(--global-code-bg-color);
       }
 
       tr:last-child td {
@@ -228,33 +231,33 @@
       }
 
       .comparison-table tr:nth-child(odd) {
-        background: #f8f9fa;
+        background: var(--global-code-bg-color);
       }
 
       .feature-row {
         font-weight: 500;
-        color: #1e3c72;
+        color: var(--global-theme-color);
       }
 
       .yes {
-        color: #4caf50;
+        color: #00ab37;
         font-weight: bold;
       }
 
       .no {
-        color: #f44336;
+        color: #ff3636;
         font-weight: bold;
       }
 
       .neutral {
-        color: #ff9800;
+        color: #f29105;
         font-weight: bold;
       }
 
       .chart-container {
         margin: 2rem 0;
         padding: 1rem;
-        background: #f8f9fa;
+        background: var(--global-code-bg-color);
         border-radius: 6px;
         display: flex;
         justify-content: center;
@@ -269,19 +272,19 @@
       }
 
       .algorithm-box {
-        background: #fffbea;
-        border: 2px solid #ffc107;
+        background: rgba(242, 145, 5, 0.05);
+        border: 2px solid #f29105;
         padding: 1.5rem;
         margin: 1.5rem 0;
         border-radius: 4px;
       }
 
       .algorithm-box strong {
-        color: #ff6f00;
+        color: #f29105;
       }
 
       footer {
-        background: #1e3c72;
+        background: var(--global-grey-dark);
         color: white;
         text-align: center;
         padding: 2rem;
@@ -297,11 +300,11 @@
       }
 
       .toc {
-        background: #f0f4f8;
+        background: var(--global-code-bg-color);
         padding: 1.5rem;
         border-radius: 6px;
         margin: 1.5rem 0;
-        border-left: 4px solid #2a5298;
+        border-left: 4px solid var(--global-theme-color);
       }
 
       .toc ul {
@@ -314,19 +317,19 @@
       }
 
       .toc a {
-        color: #2a5298;
+        color: var(--global-theme-color);
         text-decoration: none;
-        transition: color 0.3s;
+        transition: color 0.2s;
       }
 
       .toc a:hover {
-        color: #1e3c72;
+        color: var(--global-theme-color-dark);
         text-decoration: underline;
       }
 
       .highlight-box {
-        background: #fff3cd;
-        border-left: 4px solid #ffc107;
+        background: rgba(242, 145, 5, 0.08);
+        border-left: 4px solid #f29105;
         padding: 1.2rem;
         margin: 1.5rem 0;
         border-radius: 4px;
@@ -336,15 +339,15 @@
         display: inline-block;
         margin-top: 1rem;
         padding: 0.7rem 1.5rem;
-        background: #333;
+        background: var(--global-theme-color);
         color: white;
         text-decoration: none;
         border-radius: 4px;
-        transition: background 0.3s;
+        transition: background 0.2s;
       }
 
       .github-link:hover {
-        background: #555;
+        background: var(--global-theme-color-dark);
       }
 
       @media (max-width: 768px) {
@@ -353,15 +356,15 @@
         }
 
         section {
-          padding: 1.5rem;
+          padding: 1.5rem 0;
         }
 
         h1 {
-          font-size: 1.8rem;
+          font-size: 1.6rem;
         }
 
         h2 {
-          font-size: 1.5rem;
+          font-size: 1.4rem;
         }
 
         nav ul {
@@ -372,6 +375,8 @@
         nav a {
           display: block;
           padding: 0.7rem 1rem;
+          text-align: center;
+          border: 1px solid var(--global-theme-color);
         }
       }
 
@@ -382,6 +387,155 @@
       .muted {
         color: #666;
         font-size: 0.95rem;
+      }
+
+      /* Garantire che la nav non sia trasparente o buggata */
+      nav {
+        opacity: 1;
+        z-index: 50;
+        position: relative;
+      }
+
+      /* Assicurare che le sezioni non si sovrappongono */
+      section {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Link del TOC con stile migliorato */
+      .toc-link {
+        display: block;
+        padding: 0.5rem 0;
+        margin-left: 1rem;
+      }
+
+      .toc-link.level-1 {
+        margin-left: 0;
+        font-weight: 600;
+      }
+
+      .toc-link.level-2 {
+        font-size: 0.9rem;
+      }
+
+      /* Sidebar TOC */
+      .container-wrapper {
+        display: flex;
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+
+      .sidebar-toc {
+        width: 250px;
+        flex-shrink: 0;
+      }
+
+      .toc-sticky {
+        position: sticky;
+        top: 80px;
+        background: var(--global-code-bg-color);
+        border: 1px solid var(--global-divider-color);
+        border-radius: 6px;
+        padding: 1.5rem;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
+      }
+
+      .toc-sticky h3 {
+        font-size: 1rem;
+        margin: 0 0 1rem 0;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid var(--global-theme-color);
+        color: var(--global-theme-color);
+      }
+
+      .toc-sticky ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .toc-sticky li {
+        margin: 0;
+      }
+
+      .toc-sticky a {
+        display: block;
+        padding: 0.5rem 0.75rem;
+        color: var(--global-text-color);
+        text-decoration: none;
+        border-radius: 4px;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+        line-height: 1.4;
+      }
+
+      .toc-sticky a:hover {
+        background: rgba(181, 9, 172, 0.1);
+        color: var(--global-theme-color);
+        padding-left: 1rem;
+      }
+
+      .toc-sticky a.active {
+        background: rgba(181, 9, 172, 0.15);
+        color: var(--global-theme-color);
+        font-weight: 600;
+        border-left: 3px solid var(--global-theme-color);
+        padding-left: 0.5rem;
+      }
+
+      .toc-sticky a.level-1 {
+        font-weight: 600;
+        color: var(--global-theme-color-dark);
+      }
+
+      .toc-sticky a.level-2 {
+        padding-left: 1.5rem;
+        font-size: 0.85rem;
+        color: var(--global-text-color);
+      }
+
+      .content-main {
+        flex: 1;
+        min-width: 0;
+      }
+
+      @media (max-width: 1024px) {
+        .container-wrapper {
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+
+        .sidebar-toc {
+          width: 100%;
+          margin-bottom: 1rem;
+        }
+
+        .toc-sticky {
+          position: relative;
+          top: auto;
+          max-height: none;
+        }
+      }
+
+      /* Scrollbar styling for TOC */
+      .toc-sticky::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .toc-sticky::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .toc-sticky::-webkit-scrollbar-thumb {
+        background: var(--global-theme-color);
+        border-radius: 3px;
+      }
+
+      .toc-sticky::-webkit-scrollbar-thumb:hover {
+        background: var(--global-theme-color-dark);
       }
     </style>
   </head>
@@ -407,6 +561,19 @@
     </nav>
 
     <main>
+      <div class="container-wrapper">
+        <!-- Sidebar TOC -->
+        <aside class="sidebar-toc">
+          <div class="toc-sticky" id="toc-container">
+            <h3>Indice</h3>
+            <ul id="toc-list">
+              <!-- Generato dinamicamente -->
+            </ul>
+          </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="content-main">
       <!-- Executive Summary -->
       <section id="summary">
         <h2>Executive Summary</h2>
@@ -1811,39 +1978,131 @@ plt.show()</code></pre>
 
         <a href="https://github.com/yourusername/Yield_curve" class="github-link" target="_blank"> 📊 View on GitHub </a>
       </section>
+        </div>
+      </div>
     </main>
 
     <footer>
       <p>
         <strong>SOFR OIS Yield Curve Construction</strong><br />
-        Complete Theory, Methods &amp; Implementation<br /><br />
-        Last updated: May 13, 2026<br />
-        For educational and research purposes
+        Complete Theory, Methods &amp; Implementation
       </p>
       <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8">
-        All data, formulas, and methodologies presented are subject to standard disclaimers. This document is for informational purposes only and does
-        not constitute financial advice.
+        Last updated: May 13, 2026<br />
+        For educational and research purposes
       </p>
     </footer>
 
     <script>
-      // Syntax highlighting
-      document.querySelectorAll("pre code").forEach((block) => {
-        hljs.highlightElement(block);
-      });
+      // ============================================================================
+      // Generate Table of Contents Dynamically
+      // ============================================================================
+      function generateTOC() {
+        const contentMain = document.querySelector('.content-main');
+        const sections = contentMain.querySelectorAll('section');
+        const tocList = document.getElementById('toc-list');
+        
+        sections.forEach((section) => {
+          const h2 = section.querySelector('h2');
+          if (!h2) return;
+          
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = '#' + section.id;
+          a.textContent = h2.textContent;
+          a.className = 'level-1';
+          a.dataset.sectionId = section.id;
+          
+          li.appendChild(a);
+          
+          // Add h3 subheadings
+          const h3s = section.querySelectorAll('h3');
+          if (h3s.length > 0) {
+            const subList = document.createElement('ul');
+            h3s.forEach((h3) => {
+              const subLi = document.createElement('li');
+              const subA = document.createElement('a');
+              
+              // Generate unique ID if not present
+              if (!h3.id) {
+                h3.id = 'heading-' + Math.random().toString(36).substr(2, 9);
+              }
+              
+              subA.href = '#' + h3.id;
+              subA.textContent = h3.textContent;
+              subA.className = 'level-2';
+              subA.dataset.sectionId = section.id;
+              
+              subLi.appendChild(subA);
+              subList.appendChild(subLi);
+            });
+            li.appendChild(subList);
+          }
+          
+          tocList.appendChild(li);
+        });
+      }
 
-      // Smooth scrolling for navigation links
-      document.querySelectorAll("nav a").forEach((link) => {
-        link.addEventListener("click", (e) => {
-          const href = link.getAttribute("href");
-          if (href.startsWith("#")) {
-            e.preventDefault();
-            const target = document.querySelector(href);
-            if (target) {
-              target.scrollIntoView({ behavior: "smooth" });
-            }
+      // ============================================================================
+      // Scroll Spy: Highlight Active Section in TOC
+      // ============================================================================
+      function updateActiveTOC() {
+        const contentMain = document.querySelector('.content-main');
+        const sections = contentMain.querySelectorAll('section');
+        const tocLinks = document.querySelectorAll('#toc-list a');
+        
+        let activeSection = null;
+        
+        // Find the section that's currently in view
+        sections.forEach((section) => {
+          const rect = section.getBoundingClientRect();
+          // If section is more than 100px from top of viewport
+          if (rect.top <= 200 && rect.bottom > 200) {
+            activeSection = section.id;
           }
         });
+        
+        // Update TOC links
+        tocLinks.forEach((link) => {
+          link.classList.remove('active');
+          if (link.dataset.sectionId === activeSection) {
+            link.classList.add('active');
+          }
+        });
+      }
+
+      // ============================================================================
+      // Smooth Scroll
+      // ============================================================================
+      function setupSmoothScroll() {
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          });
+        });
+      }
+
+      // ============================================================================
+      // Initialize on Page Load
+      // ============================================================================
+      document.addEventListener('DOMContentLoaded', function () {
+        generateTOC();
+        setupSmoothScroll();
+        updateActiveTOC();
+        
+        // Update active section on scroll
+        window.addEventListener('scroll', updateActiveTOC, { passive: true });
+      });
+
+      // ============================================================================
+      // Syntax highlighting (original functionality)
+      // ============================================================================
+      document.querySelectorAll("pre code").forEach((block) => {
+        hljs.highlightElement(block);
       });
     </script>
   </body>

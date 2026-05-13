@@ -41,3 +41,4 @@ Questo file riassume le operazioni effettuate per la configurazione del sito [th
 ## 7. Ottimizzazione Layout Game of Life
 - **Rimozione Doppio Titolo**: Modificato il frontmatter in _pages/game-of-life.md passando da layout: page a layout: default. Questo rimuove l'intestazione predefinita di Jekyll (post-header) per lasciare esclusivamente l'header custom del gioco e spostarlo più in alto nella pagina.
 - [x] Updated CV data (_data/cv.yml) and assets/pdf/omar_tronelli_cv.pdf with new details
+- [x] Added SOFR OIS Yield Curve Complete HTML page to SOFR project

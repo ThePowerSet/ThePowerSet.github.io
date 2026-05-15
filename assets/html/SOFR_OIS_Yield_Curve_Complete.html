@@ -574,389 +574,389 @@
 
         <!-- Main Content -->
         <div class="content-main">
-      <!-- Executive Summary -->
-      <section id="summary">
-        <h2>Executive Summary</h2>
-        <p>
-          This document provides a comprehensive guide to constructing
-          <strong>SOFR (Secured Overnight Financing Rate) zero-coupon yield curves</strong> from market-observed OIS (Overnight Index Swap) swap
-          rates. The project demonstrates a fundamental problem in quantitative finance: extracting the term structure of risk-free discount factors
-          from observable market prices.
-        </p>
-
-        <h3>What is SOFR OIS?</h3>
-        <p>
-          <strong>SOFR</strong> is the successor to LIBOR, representing the virtually risk-free overnight funding rate in the United States. An
-          <strong>OIS (Overnight Index Swap)</strong> is a floating/fixed rate swap where the floating leg compounds daily SOFR rates, while the fixed
-          leg pays a fixed rate on the entire notional.
-        </p>
-
-        <div class="key-insight">
-          <strong>Key Insight:</strong> The market-quoted par rate for an OIS swap encodes information about the entire term structure of discount
-          factors up to that maturity. By bootstrapping—solving sequentially for discount factors across different tenors—we can reconstruct the
-          complete risk-free yield curve.
-        </div>
-
-        <h3>Why This Matters</h3>
-        <ul>
-          <li><strong>Pricing:</strong> Discount factors are essential for valuing virtually all interest rate derivatives</li>
-          <li><strong>Risk Management:</strong> Understanding the term structure allows accurate hedging and portfolio management</li>
-          <li>
-            <strong>Post-LIBOR World:</strong> SOFR has become the standard risk-free reference rate, making OIS curves crucial for modern fixed
-            income markets
-          </li>
-          <li><strong>Benchmark Rates:</strong> Central banks and market participants rely on these curves for policy and trading decisions</li>
-        </ul>
-
-        <h3>Project Deliverables</h3>
-        <table>
-          <tr>
-            <th>Artifact</th>
-            <th>Description</th>
-            <th>Format</th>
-          </tr>
-          <tr>
-            <td>SOFR Panel</td>
-            <td>Consolidated historical swap rates across 88 tenors and multiple dates</td>
-            <td>CSV</td>
-          </tr>
-          <tr>
-            <td>Yield Curves</td>
-            <td>Bootstrapped discount factors and zero rates for each date</td>
-            <td>CSV</td>
-          </tr>
-          <tr>
-            <td>Visualizations</td>
-            <td>High-resolution plots of yield curves, DF functions, and NPV analysis</td>
-            <td>PNG (600 dpi)</td>
-          </tr>
-          <tr>
-            <td>Comparison</td>
-            <td>Side-by-side analysis of two bootstrapping approaches</td>
-            <td>This document</td>
-          </tr>
-        </table>
-      </section>
-
-      <!-- Financial Theory -->
-      <section id="theory">
-        <h2>Financial Theory: Foundations</h2>
-
-        <h3>Discount Factors and Zero-Coupon Rates</h3>
-        <p>
-          The fundamental building block of fixed income markets is the <strong>discount factor</strong>—the present value of receiving $1 at a future
-          date $t$:
-        </p>
-
-        <div class="math-block">$$DF(t) = \text{PV of } \$1 \text{ received at time } t$$</div>
-
-        <p>From a discount factor, we extract the <strong>continuously-compounded zero-coupon rate</strong>:</p>
-
-        <div class="math-block">$$DF(t) = e^{-r_c(t) \cdot t}$$ $$r_c(t) = -\frac{\ln(DF(t))}{t}$$</div>
-
-        <p>The <strong>annual-compounded equivalent</strong> (often quoted in markets) is:</p>
-
-        <div class="math-block">$$r_{\text{annual}}(t) = e^{r_c(t)} - 1$$</div>
-
-        <h3>Interest Rate Swaps (IRS) Mechanics</h3>
-        <p>An <strong>Interest Rate Swap (IRS)</strong> is a contract where two parties exchange interest payments:</p>
-        <ul>
-          <li><strong>Fixed leg:</strong> Receives a fixed rate $r_{\text{fixed}}$ on notional $N$</li>
-          <li><strong>Floating leg:</strong> Pays a floating rate (in our case, compounded SOFR) on notional $N$</li>
-        </ul>
-
-        <p>The Net Present Value (NPV) of an IRS is:</p>
-
-        <div class="math-block">
-          $$\text{NPV}_{\text{IRS}} = \sum_{i} \Delta t_i \cdot DF(t_i) \cdot (r_{\text{floating}, i} - r_{\text{fixed}}) + \text{notional} \cdot
-          [DF(T_n) - DF(0)]$$
-        </div>
-
-        <p>where the first term values the coupon payments and the second term accounts for the final notional exchange.</p>
-
-        <h3>Par Swap Rates</h3>
-        <p>A <strong>par swap rate</strong> is the fixed rate $r_{\text{par}}$ that makes the IRS NPV equal to zero:</p>
-
-        <div class="math-block">$$\text{NPV}_{\text{IRS}}(r_{\text{par}}) = 0$$</div>
-
-        <div class="key-insight">
-          <strong>Critical Observation:</strong> Given a par swap rate and all previously bootstrapped discount factors, the only unknown is the
-          discount factor at that swap's maturity. We can solve for it using root-finding algorithms.
-        </div>
-
-        <h3>SOFR OIS Swaps</h3>
-        <p>In an <strong>OIS swap</strong>, the floating leg compounds daily SOFR rates:</p>
-
-        <div class="math-block">$$\text{Floating Accrual} = N \left[\prod_{d \in \text{days}} (1 + SOFR_d \times \frac{1}{360}) - 1\right]$$</div>
-
-        <p>
-          This daily compounding reduces credit and duration risks compared to standard interest rate swaps. Since SOFR is virtually risk-free, OIS
-          swaps serve as the foundation for the risk-free yield curve.
-        </p>
-      </section>
-
-      <!-- Mathematical Methods -->
-      <section id="methods">
-        <h2>Mathematical Methods: Bootstrapping & Interpolation</h2>
-
-        <h3>Log-Linear Interpolation of Discount Factors</h3>
-        <p>
-          Once we have bootstrapped discount factors at discrete maturities, we need a continuous function to interpolate discount factors at
-          intermediate dates. The chosen method is <strong>log-linear interpolation</strong>.
-        </p>
-
-        <p>Between two nodes $(t_1, DF_1)$ and $(t_2, DF_2)$, we interpolate the <em>logarithm</em> of discount factors linearly:</p>
-
-        <div class="math-block">$$\ln(DF(t)) = \ln(DF_1) + \frac{t - t_1}{t_2 - t_1} \left[\ln(DF_2) - \ln(DF_1)\right]$$</div>
-
-        <p>Inverting this:</p>
-
-        <div class="math-block">$$DF(t) = DF_1^{\frac{t_2 - t}{t_2 - t_1}} \cdot DF_2^{\frac{t - t_1}{t_2 - t_1}}$$</div>
-
-        <h4>Equivalence to Linear Zero Rate Interpolation</h4>
-        <p>
-          A remarkable property: log-linear interpolation of discount factors is <strong>mathematically equivalent</strong> to linear interpolation of
-          continuously-compounded zero rates.
-        </p>
-
-        <p>Starting from $\ln(DF(t)) = -r_c(t) \cdot t$, the interpolation becomes:</p>
-
-        <div class="math-block">$$-r_c(t) \cdot t = -r_1 \cdot t_1 + \frac{t - t_1}{t_2 - t_1}(r_2 \cdot t_2 - r_1 \cdot t_1)$$</div>
-
-        <p>Solving for $r_c(t)$:</p>
-
-        <div class="math-block">$$r_c(t) = r_1 + \frac{t - t_1}{t_2 - t_1}(r_2 - r_1)$$</div>
-
-        <div class="highlight-box">
-          <strong>Key Result:</strong>
-          $$\boxed{\text{Log-linear interpolation of DFs} \iff \text{Linear interpolation of zero rates}}$$ This ensures smooth, economically sensible
-          curves with no arbitrage opportunities between interpolation nodes.
-        </div>
-
-        <h3>Bootstrapping Algorithm: Sequential Root-Finding</h3>
-
-        <p>Bootstrapping solves for discount factors sequentially. At each tenor $T_n$:</p>
-
-        <div class="algorithm-box">
-          <strong>Bootstrapping Step:</strong>
-          <ol>
-            <li>We know: par swap rate $r_n$ and all previous discount factors $\{DF(T_1), \ldots, DF(T_{n-1})\}$</li>
-            <li>Unknown: $DF(T_n)$</li>
-            <li>Equation: $\text{NPV}(\text{IRS}(r_n, T_n)) = 0$ where $\text{NPV}$ depends on $DF(T_n)$</li>
-            <li>Root-finding: Solve for $DF(T_n)$ that satisfies the equation</li>
-            <li>Add to curve: $\{DF(T_1), \ldots, DF(T_n)\}$ and interpolate forward</li>
-          </ol>
-        </div>
-
-        <h3>Bisection Algorithm for Root-Finding</h3>
-
-        <p>
-          The bisection algorithm is a robust, derivative-free method for finding roots of a continuous function. Given a sign-changing bracket $[a,
-          b]$ where $f(a) \cdot f(b) < 0$:
-        </p>
-
-        <div class="algorithm-box">
-          <strong>Bisection Loop:</strong>
-          <ol>
-            <li>Compute midpoint: $m = \frac{a + b}{2}$</li>
-            <li>Evaluate: $f(m)$</li>
-            <li>
-              Update bracket:
-              <ul>
-                <li>If $f(a) \cdot f(m) < 0$: set $b \leftarrow m$ (root is in $[a, m]$)</li>
-                <li>Else: set $a \leftarrow m$ (root is in $[m, b]$)</li>
-              </ul>
-            </li>
-            <li>Repeat until $|f(m)| < \epsilon$ (typically $\epsilon = 10^{-10}$)</li>
-          </ol>
-        </div>
-
-        <p><strong>Properties:</strong></p>
-        <ul>
-          <li>Guaranteed convergence (if bracket found)</li>
-          <li>Linear convergence rate: error halves each iteration → ~33 iterations for $10^{-10}$ accuracy</li>
-          <li>No derivative required → robust for non-smooth functions</li>
-          <li>Why it works for IRS: NPV is monotonic in the terminal discount factor</li>
-        </ul>
-      </section>
-
-      <!-- Data Pipeline -->
-      <section id="pipeline">
-        <h2>Data Pipeline: From Raw Market Data to Curves</h2>
-
-        <h3>Data Sources and Structure</h3>
-
-        <p>The project processes raw market data from <strong>BlueGamma</strong>, a financial data provider:</p>
-
-        <table>
-          <tr>
-            <th>Component</th>
-            <th>Description</th>
-          </tr>
-          <tr>
-            <td><strong>Input Files</strong></td>
-            <td>88 Excel files, one per tenor (1W, 2W, 3W, 1M, ..., 50Y)</td>
-          </tr>
-          <tr>
-            <td><strong>Each File Contains</strong></td>
-            <td>Date (YYYY-MM-DD) and Rate (%) for historical observations</td>
-          </tr>
-          <tr>
-            <td><strong>Date Range</strong></td>
-            <td>2025-10-17 through 2025-11-14+ (with some duplicates)</td>
-          </tr>
-          <tr>
-            <td><strong>Tenor Ordering</strong></td>
-            <td>1W → 3W → 1M → 35M → 3Y → 50Y (88 total tenors)</td>
-          </tr>
-        </table>
-
-        <h3>Processing Workflow</h3>
-
-        <div class="math-block">
-          <strong>Data Flow:</strong><br />
-          swap_data/*.xlsx → [Data Aggregation] → SOFR_panel_Date_Tenor_Rate_sorted.csv
-          <br /><br />
-          SOFR_panel_Date_Tenor_Rate_sorted.csv → [Bootstrapping] → Curves_outputs/Curves_at_{date}.csv
-          <br /><br />
-          Curves_outputs/Curves_at_{date}.csv → [Visualization] → Plots/*.png
-        </div>
-
-        <h3>Output Artifacts</h3>
-
-        <h4>1. Aggregated Panel (CSV)</h4>
-        <p><code>SOFR_panel_Date_Tenor_Rate_sorted.csv</code> — Consolidated market data:</p>
-
-        <table class="data-table">
-          <tr>
-            <th>Date</th>
-            <th>Tenor</th>
-            <th>Rate (%)</th>
-          </tr>
-          <tr>
-            <td>2025-11-14</td>
-            <td>1W</td>
-            <td>3.9847</td>
-          </tr>
-          <tr>
-            <td>2025-11-14</td>
-            <td>2W</td>
-            <td>3.9758</td>
-          </tr>
-          <tr>
-            <td>2025-11-14</td>
-            <td>3W</td>
-            <td>3.9842</td>
-          </tr>
-          <tr>
-            <td colspan="3" class="muted">... 85 more tenors ...</td>
-          </tr>
-        </table>
-
-        <h4>2. Bootstrapped Curves (CSV)</h4>
-        <p><code>Curves_outputs/Curves_at_{date}.csv</code> — Full curve output with discount factors and zero rates:</p>
-
-        <table class="data-table">
-          <tr>
-            <th>Tenor</th>
-            <th>Termination</th>
-            <th>Par_rate_%</th>
-            <th>DF</th>
-            <th>Zero_cc</th>
-            <th>Zero_annual</th>
-          </tr>
-          <tr>
-            <td>1W</td>
-            <td>2025-11-25</td>
-            <td>3.9847</td>
-            <td>0.998784</td>
-            <td>0.039832</td>
-            <td>0.040636</td>
-          </tr>
-          <tr>
-            <td>2W</td>
-            <td>2025-12-02</td>
-            <td>3.9758</td>
-            <td>0.998014</td>
-            <td>0.039751</td>
-            <td>0.040552</td>
-          </tr>
-          <tr>
-            <td>1M</td>
-            <td>2025-12-18</td>
-            <td>3.9751</td>
-            <td>0.996257</td>
-            <td>0.039703</td>
-            <td>0.040501</td>
-          </tr>
-          <tr>
-            <td colspan="6" class="muted">... 85+ more tenors, up to 50Y ...</td>
-          </tr>
-        </table>
-
-        <h3>Key Processing Steps</h3>
-
-        <h4>Step 1: Tenor Extraction (Regex)</h4>
-        <p>Extract tenor from filename: <code>"USD SOFR 5Y Historical Swap Rates - BlueGamma.xlsx"</code> → <code>"5Y"</code></p>
-
-        <h4>Step 2: Consolidation</h4>
-        <p>Read all Excel files, extract Date and Rate columns, concatenate into single DataFrame</p>
-
-        <h4>Step 3: Sorting & Deduplication</h4>
-        <p>Sort by (Date, Tenor), remove duplicates from last date, maintain consistent tenor ordering</p>
-
-        <h4>Step 4: Bootstrapping</h4>
-        <p>For each date and tenor, apply root-finding to compute discount factor given market swap rate</p>
-
-        <h4>Step 5: Zero Rate Extraction</h4>
-        <p>From discount factors, compute continuously-compounded and annual-compounded zero rates</p>
-
-        <h4>Step 6: Visualization</h4>
-        <p>Generate high-resolution plots for curve shape, discount factor function, NPV analysis, etc.</p>
-      </section>
-
-      <!-- Method 1: rateslib Solver -->
-      <section id="method1">
-        <h2>Method 1: Using rateslib Built-in Solver</h2>
-
-        <p>
-          <strong>rateslib</strong> is a Python library for interest rate derivatives valuation and curve construction. It provides a high-level
-          <code>Solver</code> class that automatically handles bootstrapping.
-        </p>
-
-        <h3>Overview</h3>
-
-        <table>
-          <tr>
-            <th>Aspect</th>
-            <th>Details</th>
-          </tr>
-          <tr>
-            <td><strong>Approach</strong></td>
-            <td>Black-box solver using optimization algorithms (likely conjugate gradient or similar)</td>
-          </tr>
-          <tr>
-            <td><strong>User Role</strong></td>
-            <td>Define curve structure, instruments, and target rates; let solver find DFs</td>
-          </tr>
-          <tr>
-            <td><strong>Efficiency</strong></td>
-            <td>Fast, typically converges in seconds for full curve</td>
-          </tr>
-          <tr>
-            <td><strong>Transparency</strong></td>
-            <td>Less educational; harder to debug intermediate steps</td>
-          </tr>
-          <tr>
-            <td><strong>Robustness</strong></td>
-            <td>Highly robust for well-behaved market data</td>
-          </tr>
-        </table>
-
-        <h3>Implementation: Step-by-Step</h3>
-
-        <h4>Step 1: Load Data and Set Dates</h4>
-        <pre><code class="language-python">import pandas as pd
+          <!-- Executive Summary -->
+          <section id="summary">
+            <h2>Executive Summary</h2>
+            <p>
+              This document provides a comprehensive guide to constructing
+              <strong>SOFR (Secured Overnight Financing Rate) zero-coupon yield curves</strong> from market-observed OIS (Overnight Index Swap) swap
+              rates. The project demonstrates a fundamental problem in quantitative finance: extracting the term structure of risk-free discount
+              factors from observable market prices.
+            </p>
+
+            <h3>What is SOFR OIS?</h3>
+            <p>
+              <strong>SOFR</strong> is the successor to LIBOR, representing the virtually risk-free overnight funding rate in the United States. An
+              <strong>OIS (Overnight Index Swap)</strong> is a floating/fixed rate swap where the floating leg compounds daily SOFR rates, while the
+              fixed leg pays a fixed rate on the entire notional.
+            </p>
+
+            <div class="key-insight">
+              <strong>Key Insight:</strong> The market-quoted par rate for an OIS swap encodes information about the entire term structure of discount
+              factors up to that maturity. By bootstrapping—solving sequentially for discount factors across different tenors—we can reconstruct the
+              complete risk-free yield curve.
+            </div>
+
+            <h3>Why This Matters</h3>
+            <ul>
+              <li><strong>Pricing:</strong> Discount factors are essential for valuing virtually all interest rate derivatives</li>
+              <li><strong>Risk Management:</strong> Understanding the term structure allows accurate hedging and portfolio management</li>
+              <li>
+                <strong>Post-LIBOR World:</strong> SOFR has become the standard risk-free reference rate, making OIS curves crucial for modern fixed
+                income markets
+              </li>
+              <li><strong>Benchmark Rates:</strong> Central banks and market participants rely on these curves for policy and trading decisions</li>
+            </ul>
+
+            <h3>Project Deliverables</h3>
+            <table>
+              <tr>
+                <th>Artifact</th>
+                <th>Description</th>
+                <th>Format</th>
+              </tr>
+              <tr>
+                <td>SOFR Panel</td>
+                <td>Consolidated historical swap rates across 88 tenors and multiple dates</td>
+                <td>CSV</td>
+              </tr>
+              <tr>
+                <td>Yield Curves</td>
+                <td>Bootstrapped discount factors and zero rates for each date</td>
+                <td>CSV</td>
+              </tr>
+              <tr>
+                <td>Visualizations</td>
+                <td>High-resolution plots of yield curves, DF functions, and NPV analysis</td>
+                <td>PNG (600 dpi)</td>
+              </tr>
+              <tr>
+                <td>Comparison</td>
+                <td>Side-by-side analysis of two bootstrapping approaches</td>
+                <td>This document</td>
+              </tr>
+            </table>
+          </section>
+
+          <!-- Financial Theory -->
+          <section id="theory">
+            <h2>Financial Theory: Foundations</h2>
+
+            <h3>Discount Factors and Zero-Coupon Rates</h3>
+            <p>
+              The fundamental building block of fixed income markets is the <strong>discount factor</strong>—the present value of receiving $1 at a
+              future date $t$:
+            </p>
+
+            <div class="math-block">$$DF(t) = \text{PV of } \$1 \text{ received at time } t$$</div>
+
+            <p>From a discount factor, we extract the <strong>continuously-compounded zero-coupon rate</strong>:</p>
+
+            <div class="math-block">$$DF(t) = e^{-r_c(t) \cdot t}$$ $$r_c(t) = -\frac{\ln(DF(t))}{t}$$</div>
+
+            <p>The <strong>annual-compounded equivalent</strong> (often quoted in markets) is:</p>
+
+            <div class="math-block">$$r_{\text{annual}}(t) = e^{r_c(t)} - 1$$</div>
+
+            <h3>Interest Rate Swaps (IRS) Mechanics</h3>
+            <p>An <strong>Interest Rate Swap (IRS)</strong> is a contract where two parties exchange interest payments:</p>
+            <ul>
+              <li><strong>Fixed leg:</strong> Receives a fixed rate $r_{\text{fixed}}$ on notional $N$</li>
+              <li><strong>Floating leg:</strong> Pays a floating rate (in our case, compounded SOFR) on notional $N$</li>
+            </ul>
+
+            <p>The Net Present Value (NPV) of an IRS is:</p>
+
+            <div class="math-block">
+              $$\text{NPV}_{\text{IRS}} = \sum_{i} \Delta t_i \cdot DF(t_i) \cdot (r_{\text{floating}, i} - r_{\text{fixed}}) + \text{notional} \cdot
+              [DF(T_n) - DF(0)]$$
+            </div>
+
+            <p>where the first term values the coupon payments and the second term accounts for the final notional exchange.</p>
+
+            <h3>Par Swap Rates</h3>
+            <p>A <strong>par swap rate</strong> is the fixed rate $r_{\text{par}}$ that makes the IRS NPV equal to zero:</p>
+
+            <div class="math-block">$$\text{NPV}_{\text{IRS}}(r_{\text{par}}) = 0$$</div>
+
+            <div class="key-insight">
+              <strong>Critical Observation:</strong> Given a par swap rate and all previously bootstrapped discount factors, the only unknown is the
+              discount factor at that swap's maturity. We can solve for it using root-finding algorithms.
+            </div>
+
+            <h3>SOFR OIS Swaps</h3>
+            <p>In an <strong>OIS swap</strong>, the floating leg compounds daily SOFR rates:</p>
+
+            <div class="math-block">$$\text{Floating Accrual} = N \left[\prod_{d \in \text{days}} (1 + SOFR_d \times \frac{1}{360}) - 1\right]$$</div>
+
+            <p>
+              This daily compounding reduces credit and duration risks compared to standard interest rate swaps. Since SOFR is virtually risk-free,
+              OIS swaps serve as the foundation for the risk-free yield curve.
+            </p>
+          </section>
+
+          <!-- Mathematical Methods -->
+          <section id="methods">
+            <h2>Mathematical Methods: Bootstrapping & Interpolation</h2>
+
+            <h3>Log-Linear Interpolation of Discount Factors</h3>
+            <p>
+              Once we have bootstrapped discount factors at discrete maturities, we need a continuous function to interpolate discount factors at
+              intermediate dates. The chosen method is <strong>log-linear interpolation</strong>.
+            </p>
+
+            <p>Between two nodes $(t_1, DF_1)$ and $(t_2, DF_2)$, we interpolate the <em>logarithm</em> of discount factors linearly:</p>
+
+            <div class="math-block">$$\ln(DF(t)) = \ln(DF_1) + \frac{t - t_1}{t_2 - t_1} \left[\ln(DF_2) - \ln(DF_1)\right]$$</div>
+
+            <p>Inverting this:</p>
+
+            <div class="math-block">$$DF(t) = DF_1^{\frac{t_2 - t}{t_2 - t_1}} \cdot DF_2^{\frac{t - t_1}{t_2 - t_1}}$$</div>
+
+            <h4>Equivalence to Linear Zero Rate Interpolation</h4>
+            <p>
+              A remarkable property: log-linear interpolation of discount factors is <strong>mathematically equivalent</strong> to linear
+              interpolation of continuously-compounded zero rates.
+            </p>
+
+            <p>Starting from $\ln(DF(t)) = -r_c(t) \cdot t$, the interpolation becomes:</p>
+
+            <div class="math-block">$$-r_c(t) \cdot t = -r_1 \cdot t_1 + \frac{t - t_1}{t_2 - t_1}(r_2 \cdot t_2 - r_1 \cdot t_1)$$</div>
+
+            <p>Solving for $r_c(t)$:</p>
+
+            <div class="math-block">$$r_c(t) = r_1 + \frac{t - t_1}{t_2 - t_1}(r_2 - r_1)$$</div>
+
+            <div class="highlight-box">
+              <strong>Key Result:</strong>
+              $$\boxed{\text{Log-linear interpolation of DFs} \iff \text{Linear interpolation of zero rates}}$$ This ensures smooth, economically
+              sensible curves with no arbitrage opportunities between interpolation nodes.
+            </div>
+
+            <h3>Bootstrapping Algorithm: Sequential Root-Finding</h3>
+
+            <p>Bootstrapping solves for discount factors sequentially. At each tenor $T_n$:</p>
+
+            <div class="algorithm-box">
+              <strong>Bootstrapping Step:</strong>
+              <ol>
+                <li>We know: par swap rate $r_n$ and all previous discount factors $\{DF(T_1), \ldots, DF(T_{n-1})\}$</li>
+                <li>Unknown: $DF(T_n)$</li>
+                <li>Equation: $\text{NPV}(\text{IRS}(r_n, T_n)) = 0$ where $\text{NPV}$ depends on $DF(T_n)$</li>
+                <li>Root-finding: Solve for $DF(T_n)$ that satisfies the equation</li>
+                <li>Add to curve: $\{DF(T_1), \ldots, DF(T_n)\}$ and interpolate forward</li>
+              </ol>
+            </div>
+
+            <h3>Bisection Algorithm for Root-Finding</h3>
+
+            <p>
+              The bisection algorithm is a robust, derivative-free method for finding roots of a continuous function. Given a sign-changing bracket
+              $[a, b]$ where $f(a) \cdot f(b) < 0$:
+            </p>
+
+            <div class="algorithm-box">
+              <strong>Bisection Loop:</strong>
+              <ol>
+                <li>Compute midpoint: $m = \frac{a + b}{2}$</li>
+                <li>Evaluate: $f(m)$</li>
+                <li>
+                  Update bracket:
+                  <ul>
+                    <li>If $f(a) \cdot f(m) < 0$: set $b \leftarrow m$ (root is in $[a, m]$)</li>
+                    <li>Else: set $a \leftarrow m$ (root is in $[m, b]$)</li>
+                  </ul>
+                </li>
+                <li>Repeat until $|f(m)| < \epsilon$ (typically $\epsilon = 10^{-10}$)</li>
+              </ol>
+            </div>
+
+            <p><strong>Properties:</strong></p>
+            <ul>
+              <li>Guaranteed convergence (if bracket found)</li>
+              <li>Linear convergence rate: error halves each iteration → ~33 iterations for $10^{-10}$ accuracy</li>
+              <li>No derivative required → robust for non-smooth functions</li>
+              <li>Why it works for IRS: NPV is monotonic in the terminal discount factor</li>
+            </ul>
+          </section>
+
+          <!-- Data Pipeline -->
+          <section id="pipeline">
+            <h2>Data Pipeline: From Raw Market Data to Curves</h2>
+
+            <h3>Data Sources and Structure</h3>
+
+            <p>The project processes raw market data from <strong>BlueGamma</strong>, a financial data provider:</p>
+
+            <table>
+              <tr>
+                <th>Component</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td><strong>Input Files</strong></td>
+                <td>88 Excel files, one per tenor (1W, 2W, 3W, 1M, ..., 50Y)</td>
+              </tr>
+              <tr>
+                <td><strong>Each File Contains</strong></td>
+                <td>Date (YYYY-MM-DD) and Rate (%) for historical observations</td>
+              </tr>
+              <tr>
+                <td><strong>Date Range</strong></td>
+                <td>2025-10-17 through 2025-11-14+ (with some duplicates)</td>
+              </tr>
+              <tr>
+                <td><strong>Tenor Ordering</strong></td>
+                <td>1W → 3W → 1M → 35M → 3Y → 50Y (88 total tenors)</td>
+              </tr>
+            </table>
+
+            <h3>Processing Workflow</h3>
+
+            <div class="math-block">
+              <strong>Data Flow:</strong><br />
+              swap_data/*.xlsx → [Data Aggregation] → SOFR_panel_Date_Tenor_Rate_sorted.csv
+              <br /><br />
+              SOFR_panel_Date_Tenor_Rate_sorted.csv → [Bootstrapping] → Curves_outputs/Curves_at_{date}.csv
+              <br /><br />
+              Curves_outputs/Curves_at_{date}.csv → [Visualization] → Plots/*.png
+            </div>
+
+            <h3>Output Artifacts</h3>
+
+            <h4>1. Aggregated Panel (CSV)</h4>
+            <p><code>SOFR_panel_Date_Tenor_Rate_sorted.csv</code> — Consolidated market data:</p>
+
+            <table class="data-table">
+              <tr>
+                <th>Date</th>
+                <th>Tenor</th>
+                <th>Rate (%)</th>
+              </tr>
+              <tr>
+                <td>2025-11-14</td>
+                <td>1W</td>
+                <td>3.9847</td>
+              </tr>
+              <tr>
+                <td>2025-11-14</td>
+                <td>2W</td>
+                <td>3.9758</td>
+              </tr>
+              <tr>
+                <td>2025-11-14</td>
+                <td>3W</td>
+                <td>3.9842</td>
+              </tr>
+              <tr>
+                <td colspan="3" class="muted">... 85 more tenors ...</td>
+              </tr>
+            </table>
+
+            <h4>2. Bootstrapped Curves (CSV)</h4>
+            <p><code>Curves_outputs/Curves_at_{date}.csv</code> — Full curve output with discount factors and zero rates:</p>
+
+            <table class="data-table">
+              <tr>
+                <th>Tenor</th>
+                <th>Termination</th>
+                <th>Par_rate_%</th>
+                <th>DF</th>
+                <th>Zero_cc</th>
+                <th>Zero_annual</th>
+              </tr>
+              <tr>
+                <td>1W</td>
+                <td>2025-11-25</td>
+                <td>3.9847</td>
+                <td>0.998784</td>
+                <td>0.039832</td>
+                <td>0.040636</td>
+              </tr>
+              <tr>
+                <td>2W</td>
+                <td>2025-12-02</td>
+                <td>3.9758</td>
+                <td>0.998014</td>
+                <td>0.039751</td>
+                <td>0.040552</td>
+              </tr>
+              <tr>
+                <td>1M</td>
+                <td>2025-12-18</td>
+                <td>3.9751</td>
+                <td>0.996257</td>
+                <td>0.039703</td>
+                <td>0.040501</td>
+              </tr>
+              <tr>
+                <td colspan="6" class="muted">... 85+ more tenors, up to 50Y ...</td>
+              </tr>
+            </table>
+
+            <h3>Key Processing Steps</h3>
+
+            <h4>Step 1: Tenor Extraction (Regex)</h4>
+            <p>Extract tenor from filename: <code>"USD SOFR 5Y Historical Swap Rates - BlueGamma.xlsx"</code> → <code>"5Y"</code></p>
+
+            <h4>Step 2: Consolidation</h4>
+            <p>Read all Excel files, extract Date and Rate columns, concatenate into single DataFrame</p>
+
+            <h4>Step 3: Sorting & Deduplication</h4>
+            <p>Sort by (Date, Tenor), remove duplicates from last date, maintain consistent tenor ordering</p>
+
+            <h4>Step 4: Bootstrapping</h4>
+            <p>For each date and tenor, apply root-finding to compute discount factor given market swap rate</p>
+
+            <h4>Step 5: Zero Rate Extraction</h4>
+            <p>From discount factors, compute continuously-compounded and annual-compounded zero rates</p>
+
+            <h4>Step 6: Visualization</h4>
+            <p>Generate high-resolution plots for curve shape, discount factor function, NPV analysis, etc.</p>
+          </section>
+
+          <!-- Method 1: rateslib Solver -->
+          <section id="method1">
+            <h2>Method 1: Using rateslib Built-in Solver</h2>
+
+            <p>
+              <strong>rateslib</strong> is a Python library for interest rate derivatives valuation and curve construction. It provides a high-level
+              <code>Solver</code> class that automatically handles bootstrapping.
+            </p>
+
+            <h3>Overview</h3>
+
+            <table>
+              <tr>
+                <th>Aspect</th>
+                <th>Details</th>
+              </tr>
+              <tr>
+                <td><strong>Approach</strong></td>
+                <td>Black-box solver using optimization algorithms (likely conjugate gradient or similar)</td>
+              </tr>
+              <tr>
+                <td><strong>User Role</strong></td>
+                <td>Define curve structure, instruments, and target rates; let solver find DFs</td>
+              </tr>
+              <tr>
+                <td><strong>Efficiency</strong></td>
+                <td>Fast, typically converges in seconds for full curve</td>
+              </tr>
+              <tr>
+                <td><strong>Transparency</strong></td>
+                <td>Less educational; harder to debug intermediate steps</td>
+              </tr>
+              <tr>
+                <td><strong>Robustness</strong></td>
+                <td>Highly robust for well-behaved market data</td>
+              </tr>
+            </table>
+
+            <h3>Implementation: Step-by-Step</h3>
+
+            <h4>Step 1: Load Data and Set Dates</h4>
+            <pre><code class="language-python">import pandas as pd
 from rateslib import dt, add_tenor
 from rateslib.curves import Curve
 from rateslib.instruments import IRS
@@ -975,10 +975,10 @@ settle_date = add_tenor(base_date, "2B", "MF", "nyc")
 # Compute termination dates for each tenor
 data["Termination"] = [add_tenor(settle_date, t, "F", "nyc") for t in data["Term"]]</code></pre>
 
-        <h4>Step 2: Create Curve Object</h4>
-        <p>Initialize an empty curve with node placeholders. The solver will update these nodes:</p>
+            <h4>Step 2: Create Curve Object</h4>
+            <p>Initialize an empty curve with node placeholders. The solver will update these nodes:</p>
 
-        <pre><code class="language-python">sofr = Curve(
+            <pre><code class="language-python">sofr = Curve(
     id="sofr",
     convention="Act360",           # Day count: Actual/360
     calendar="nyc",                # Holiday calendar: New York
@@ -990,10 +990,10 @@ data["Termination"] = [add_tenor(settle_date, t, "F", "nyc") for t in data["Term
     },
 )</code></pre>
 
-        <h4>Step 3: Define Instruments and Solver</h4>
-        <p>Create IRS instruments for each tenor and instantiate the solver:</p>
+            <h4>Step 3: Define Instruments and Solver</h4>
+            <p>Create IRS instruments for each tenor and instantiate the solver:</p>
 
-        <pre><code class="language-python">solver = Solver(
+            <pre><code class="language-python">solver = Solver(
     curves=[sofr],
     instruments=[IRS(settle_date, d, spec="usd_irs", curves="sofr") 
                  for d in data["Termination"]],
@@ -1003,8 +1003,8 @@ data["Termination"] = [add_tenor(settle_date, t, "F", "nyc") for t in data["Term
 )
 # Solver automatically bootstraps all discount factors</code></pre>
 
-        <h4>Step 4: Extract Results</h4>
-        <pre><code class="language-python">import numpy as np
+            <h4>Step 4: Extract Results</h4>
+            <pre><code class="language-python">import numpy as np
 
 # Compute discount factors and zero rates
 data["DF"] = [float(sofr[d]) for d in data["Termination"]]
@@ -1019,14 +1019,14 @@ data["Zero_annual"] = np.exp(data["Zero_cc"]) - 1.0
 # Display results
 print(data[["Term", "DF", "Zero_cc", "Zero_annual"]])</code></pre>
 
-        <h3>Sanity Checks</h3>
+            <h3>Sanity Checks</h3>
 
-        <p>The solver provides results, but verification is essential:</p>
+            <p>The solver provides results, but verification is essential:</p>
 
-        <h4>Check 1: NPV of Calibration Instruments</h4>
-        <p>IRS instruments used in calibration should have NPV ≈ 0:</p>
+            <h4>Check 1: NPV of Calibration Instruments</h4>
+            <p>IRS instruments used in calibration should have NPV ≈ 0:</p>
 
-        <pre><code class="language-python">sanity_inst = [
+            <pre><code class="language-python">sanity_inst = [
     IRS(settle_date, d, fixed_rate=r, spec="usd_irs", curves="sofr")
     for d, r in zip(data["Termination"], data["Rate"])
 ]
@@ -1035,140 +1035,140 @@ npvs = np.array([float(inst.npv(solver=solver)) for inst in sanity_inst])
 print(f"NPV min/max/RMS: {npvs.min():.2e}, {npvs.max():.2e}, {np.sqrt((npvs**2).mean()):.2e}")
 # Expected: All ≈ 0 (within numerical precision)</code></pre>
 
-        <h4>Check 2: Implied Par Rates Match Market Rates</h4>
-        <p>Computing the par rate from solved curve should match input:</p>
+            <h4>Check 2: Implied Par Rates Match Market Rates</h4>
+            <p>Computing the par rate from solved curve should match input:</p>
 
-        <pre><code class="language-python">implied_rates = np.array([float(inst.rate(solver=solver)) for inst in sanity_inst])
+            <pre><code class="language-python">implied_rates = np.array([float(inst.rate(solver=solver)) for inst in sanity_inst])
 diff_bps = (implied_rates - data["Rate"].values) * 10000  # Convert to basis points
 
 print(f"Max rate difference: {np.abs(diff_bps).max():.6f} bps")
 # Expected: < 0.01 bps (essentially zero)</code></pre>
 
-        <h4>Check 3: Discount Factors Monotonic</h4>
-        <p>DF must decrease with maturity (no arbitrage):</p>
+            <h4>Check 3: Discount Factors Monotonic</h4>
+            <p>DF must decrease with maturity (no arbitrage):</p>
 
-        <pre><code class="language-python">df_diff = np.diff(data["DF"].values)
+            <pre><code class="language-python">df_diff = np.diff(data["DF"].values)
 print(f"Max DF increase: {df_diff.max():.2e}")
 # Expected: Negative or ≈ 0 (DFs should decrease or stay flat, never increase)</code></pre>
 
-        <h3>Output Example</h3>
+            <h3>Output Example</h3>
 
-        <p>Sample curve output (full dataset has 88 tenors):</p>
+            <p>Sample curve output (full dataset has 88 tenors):</p>
 
-        <table class="data-table">
-          <tr>
-            <th>Term</th>
-            <th>Rate (%)</th>
-            <th>DF</th>
-            <th>Zero_cc (%)</th>
-            <th>Zero_annual (%)</th>
-          </tr>
-          <tr>
-            <td>1W</td>
-            <td>3.9847</td>
-            <td>0.998784</td>
-            <td>3.9832</td>
-            <td>4.0636</td>
-          </tr>
-          <tr>
-            <td>2W</td>
-            <td>3.9758</td>
-            <td>0.998014</td>
-            <td>3.9751</td>
-            <td>4.0552</td>
-          </tr>
-          <tr>
-            <td>1M</td>
-            <td>3.9751</td>
-            <td>0.996257</td>
-            <td>3.9703</td>
-            <td>4.0501</td>
-          </tr>
-          <tr>
-            <td>3M</td>
-            <td>3.8921</td>
-            <td>0.989713</td>
-            <td>3.8774</td>
-            <td>3.9536</td>
-          </tr>
-          <tr>
-            <td>6M</td>
-            <td>3.8045</td>
-            <td>0.980796</td>
-            <td>3.7732</td>
-            <td>3.8453</td>
-          </tr>
-          <tr>
-            <td>1Y</td>
-            <td>3.6208</td>
-            <td>0.964162</td>
-            <td>3.5606</td>
-            <td>3.6247</td>
-          </tr>
-          <tr>
-            <td colspan="5" class="muted">... continues to 50Y ...</td>
-          </tr>
-        </table>
+            <table class="data-table">
+              <tr>
+                <th>Term</th>
+                <th>Rate (%)</th>
+                <th>DF</th>
+                <th>Zero_cc (%)</th>
+                <th>Zero_annual (%)</th>
+              </tr>
+              <tr>
+                <td>1W</td>
+                <td>3.9847</td>
+                <td>0.998784</td>
+                <td>3.9832</td>
+                <td>4.0636</td>
+              </tr>
+              <tr>
+                <td>2W</td>
+                <td>3.9758</td>
+                <td>0.998014</td>
+                <td>3.9751</td>
+                <td>4.0552</td>
+              </tr>
+              <tr>
+                <td>1M</td>
+                <td>3.9751</td>
+                <td>0.996257</td>
+                <td>3.9703</td>
+                <td>4.0501</td>
+              </tr>
+              <tr>
+                <td>3M</td>
+                <td>3.8921</td>
+                <td>0.989713</td>
+                <td>3.8774</td>
+                <td>3.9536</td>
+              </tr>
+              <tr>
+                <td>6M</td>
+                <td>3.8045</td>
+                <td>0.980796</td>
+                <td>3.7732</td>
+                <td>3.8453</td>
+              </tr>
+              <tr>
+                <td>1Y</td>
+                <td>3.6208</td>
+                <td>0.964162</td>
+                <td>3.5606</td>
+                <td>3.6247</td>
+              </tr>
+              <tr>
+                <td colspan="5" class="muted">... continues to 50Y ...</td>
+              </tr>
+            </table>
 
-        <h3>Advantages</h3>
-        <ul>
-          <li><strong>Simplicity:</strong> Few lines of code, minimal setup</li>
-          <li><strong>Speed:</strong> Optimized C++ backend, processes full curve in seconds</li>
-          <li><strong>Robustness:</strong> Handles market data quirks automatically</li>
-          <li><strong>Features:</strong> Interpolation, conventions, calendars all built-in</li>
-        </ul>
+            <h3>Advantages</h3>
+            <ul>
+              <li><strong>Simplicity:</strong> Few lines of code, minimal setup</li>
+              <li><strong>Speed:</strong> Optimized C++ backend, processes full curve in seconds</li>
+              <li><strong>Robustness:</strong> Handles market data quirks automatically</li>
+              <li><strong>Features:</strong> Interpolation, conventions, calendars all built-in</li>
+            </ul>
 
-        <h3>Disadvantages</h3>
-        <ul>
-          <li><strong>Black-box:</strong> Hard to understand what's happening internally</li>
-          <li><strong>Debugging:</strong> Difficult to diagnose convergence issues</li>
-          <li><strong>Educational Value:</strong> Doesn't reveal the mathematical details</li>
-          <li><strong>Dependency:</strong> Requires external library (rateslib)</li>
-        </ul>
-      </section>
+            <h3>Disadvantages</h3>
+            <ul>
+              <li><strong>Black-box:</strong> Hard to understand what's happening internally</li>
+              <li><strong>Debugging:</strong> Difficult to diagnose convergence issues</li>
+              <li><strong>Educational Value:</strong> Doesn't reveal the mathematical details</li>
+              <li><strong>Dependency:</strong> Requires external library (rateslib)</li>
+            </ul>
+          </section>
 
-      <!-- Method 2: Manual Bisection -->
-      <section id="method2">
-        <h2>Method 2: Manual Bisection Implementation</h2>
+          <!-- Method 2: Manual Bisection -->
+          <section id="method2">
+            <h2>Method 2: Manual Bisection Implementation</h2>
 
-        <p>
-          For educational purposes and full control, we implement bootstrapping from scratch using the <strong>bisection algorithm</strong>. This
-          reveals exactly how and why the curve is built.
-        </p>
+            <p>
+              For educational purposes and full control, we implement bootstrapping from scratch using the <strong>bisection algorithm</strong>. This
+              reveals exactly how and why the curve is built.
+            </p>
 
-        <h3>Overview</h3>
+            <h3>Overview</h3>
 
-        <table>
-          <tr>
-            <th>Aspect</th>
-            <th>Details</th>
-          </tr>
-          <tr>
-            <td><strong>Approach</strong></td>
-            <td>Explicit bisection root-finding on IRS NPV function</td>
-          </tr>
-          <tr>
-            <td><strong>User Role</strong></td>
-            <td>Implement algorithm step-by-step, control every detail</td>
-          </tr>
-          <tr>
-            <td><strong>Efficiency</strong></td>
-            <td>Slower (pure Python), but adequate for curve sizes</td>
-          </tr>
-          <tr>
-            <td><strong>Transparency</strong></td>
-            <td>Highly educational; every step visible and debuggable</td>
-          </tr>
-          <tr>
-            <td><strong>Robustness</strong></td>
-            <td>Requires careful bracket selection, but guaranteed convergence if bracket exists</td>
-          </tr>
-        </table>
+            <table>
+              <tr>
+                <th>Aspect</th>
+                <th>Details</th>
+              </tr>
+              <tr>
+                <td><strong>Approach</strong></td>
+                <td>Explicit bisection root-finding on IRS NPV function</td>
+              </tr>
+              <tr>
+                <td><strong>User Role</strong></td>
+                <td>Implement algorithm step-by-step, control every detail</td>
+              </tr>
+              <tr>
+                <td><strong>Efficiency</strong></td>
+                <td>Slower (pure Python), but adequate for curve sizes</td>
+              </tr>
+              <tr>
+                <td><strong>Transparency</strong></td>
+                <td>Highly educational; every step visible and debuggable</td>
+              </tr>
+              <tr>
+                <td><strong>Robustness</strong></td>
+                <td>Requires careful bracket selection, but guaranteed convergence if bracket exists</td>
+              </tr>
+            </table>
 
-        <h3>Implementation: Step-by-Step</h3>
+            <h3>Implementation: Step-by-Step</h3>
 
-        <h4>Step 1: Data Preparation (Same as Method 1)</h4>
-        <pre><code class="language-python">import numpy as np
+            <h4>Step 1: Data Preparation (Same as Method 1)</h4>
+            <pre><code class="language-python">import numpy as np
 import pandas as pd
 from rateslib import dt, add_tenor
 from rateslib.curves import Curve
@@ -1184,10 +1184,10 @@ settle_date = add_tenor(trade_date, "2B", "MF", "nyc")
 data = sofr_curve("2025-11-14")
 data["Termination"] = [add_tenor(settle_date, t, "MF", "nyc") for t in data["Tenor"]]</code></pre>
 
-        <h4>Step 2: Curve Builder Function</h4>
-        <p>Create a utility function to build curves from discount factor nodes:</p>
+            <h4>Step 2: Curve Builder Function</h4>
+            <p>Create a utility function to build curves from discount factor nodes:</p>
 
-        <pre><code class="language-python">def build_curve_from_nodes(nodes_dict):
+            <pre><code class="language-python">def build_curve_from_nodes(nodes_dict):
     """
     Build a Curve object from a dictionary of {date: DF} pairs.
     
@@ -1203,10 +1203,10 @@ data["Termination"] = [add_tenor(settle_date, t, "MF", "nyc") for t in data["Ten
         nodes=nodes_dict,
     )</code></pre>
 
-        <h4>Step 3: Bisection Solver Function</h4>
-        <p>The core algorithm: solve for DF(T) such that IRS NPV = 0:</p>
+            <h4>Step 3: Bisection Solver Function</h4>
+            <p>The core algorithm: solve for DF(T) such that IRS NPV = 0:</p>
 
-        <pre><code class="language-python">def solve_df_for_irs(tenor, termination_date, market_rate, known_nodes):
+            <pre><code class="language-python">def solve_df_for_irs(tenor, termination_date, market_rate, known_nodes):
     """
     Bisection algorithm to find DF(termination_date) such that 
     the IRS with fixed rate = market_rate has NPV = 0.
@@ -1277,10 +1277,10 @@ data["Termination"] = [add_tenor(settle_date, t, "MF", "nyc") for t in data["Ten
     
     return mid  # Final estimate</code></pre>
 
-        <h4>Step 4: Bootstrapping Loop</h4>
-        <p>Sequentially solve for discount factors across all tenors:</p>
+            <h4>Step 4: Bootstrapping Loop</h4>
+            <p>Sequentially solve for discount factors across all tenors:</p>
 
-        <pre><code class="language-python">nodes = {trade_date: 1.0}   # Initialize with trade date DF = 1
+            <pre><code class="language-python">nodes = {trade_date: 1.0}   # Initialize with trade date DF = 1
 df_rows = []
 
 for _, row in data.iterrows():
@@ -1313,97 +1313,97 @@ for _, row in data.iterrows():
 df_curve = pd.DataFrame(df_rows)
 print(df_curve)</code></pre>
 
-        <h3>Detailed Algorithm Walkthrough: One Tenor</h3>
+            <h3>Detailed Algorithm Walkthrough: One Tenor</h3>
 
-        <p>Let's trace through solving for the 5Y tenor to understand the bisection process:</p>
+            <p>Let's trace through solving for the 5Y tenor to understand the bisection process:</p>
 
-        <div class="algorithm-box">
-          <strong>Example: Solving DF(5Y) given market rate 3.621%</strong>
+            <div class="algorithm-box">
+              <strong>Example: Solving DF(5Y) given market rate 3.621%</strong>
 
-          <p><strong>1. Initial Bracket:</strong> [0.1, 0.8]</p>
-          <ul>
-            <li>At DF_low = 0.1: NPV = +2,847.32 (positive)</li>
-            <li>At DF_high = 0.8: NPV = -1,253.18 (negative)</li>
-            <li>Sign change detected! ✓ Proceed with bisection</li>
-          </ul>
+              <p><strong>1. Initial Bracket:</strong> [0.1, 0.8]</p>
+              <ul>
+                <li>At DF_low = 0.1: NPV = +2,847.32 (positive)</li>
+                <li>At DF_high = 0.8: NPV = -1,253.18 (negative)</li>
+                <li>Sign change detected! ✓ Proceed with bisection</li>
+              </ul>
 
-          <p><strong>2. Bisection Iterations:</strong></p>
-          <table class="data-table">
-            <tr>
-              <th>Iteration</th>
-              <th>low</th>
-              <th>mid</th>
-              <th>high</th>
-              <th>f(mid)</th>
-              <th>|f(mid)|</th>
-            </tr>
-            <tr>
-              <td>0</td>
-              <td>0.1000</td>
-              <td>0.4500</td>
-              <td>0.8000</td>
-              <td>+512.84</td>
-              <td>512.84</td>
-            </tr>
-            <tr>
-              <td>1</td>
-              <td>0.4500</td>
-              <td>0.6250</td>
-              <td>0.8000</td>
-              <td>-168.27</td>
-              <td>168.27</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>0.4500</td>
-              <td>0.5375</td>
-              <td>0.6250</td>
-              <td>+98.14</td>
-              <td>98.14</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>0.5375</td>
-              <td>0.5813</td>
-              <td>0.6250</td>
-              <td>-41.93</td>
-              <td>41.93</td>
-            </tr>
-            <tr>
-              <td colspan="5" class="muted">... [iterations 4-25] ...</td>
-            </tr>
-            <tr>
-              <td>26</td>
-              <td>0.964054</td>
-              <td>0.964070</td>
-              <td>0.964087</td>
-              <td>-3.1e-09</td>
-              <td>3.1e-09</td>
-            </tr>
-            <tr>
-              <td>27</td>
-              <td>0.964062</td>
-              <td>0.964066</td>
-              <td>0.964070</td>
-              <td>1.2e-10</td>
-              <td>1.2e-10</td>
-            </tr>
-          </table>
+              <p><strong>2. Bisection Iterations:</strong></p>
+              <table class="data-table">
+                <tr>
+                  <th>Iteration</th>
+                  <th>low</th>
+                  <th>mid</th>
+                  <th>high</th>
+                  <th>f(mid)</th>
+                  <th>|f(mid)|</th>
+                </tr>
+                <tr>
+                  <td>0</td>
+                  <td>0.1000</td>
+                  <td>0.4500</td>
+                  <td>0.8000</td>
+                  <td>+512.84</td>
+                  <td>512.84</td>
+                </tr>
+                <tr>
+                  <td>1</td>
+                  <td>0.4500</td>
+                  <td>0.6250</td>
+                  <td>0.8000</td>
+                  <td>-168.27</td>
+                  <td>168.27</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>0.4500</td>
+                  <td>0.5375</td>
+                  <td>0.6250</td>
+                  <td>+98.14</td>
+                  <td>98.14</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>0.5375</td>
+                  <td>0.5813</td>
+                  <td>0.6250</td>
+                  <td>-41.93</td>
+                  <td>41.93</td>
+                </tr>
+                <tr>
+                  <td colspan="5" class="muted">... [iterations 4-25] ...</td>
+                </tr>
+                <tr>
+                  <td>26</td>
+                  <td>0.964054</td>
+                  <td>0.964070</td>
+                  <td>0.964087</td>
+                  <td>-3.1e-09</td>
+                  <td>3.1e-09</td>
+                </tr>
+                <tr>
+                  <td>27</td>
+                  <td>0.964062</td>
+                  <td>0.964066</td>
+                  <td>0.964070</td>
+                  <td>1.2e-10</td>
+                  <td>1.2e-10</td>
+                </tr>
+              </table>
 
-          <p><strong>3. Final Result:</strong></p>
-          <p>After 27 iterations: <code>DF(5Y) = 0.9640620</code></p>
-          <p>Zero rate (cc): 3.5606% (continuous)</p>
-          <p>Zero rate (annual): 3.6247% (annually-compounded)</p>
-        </div>
+              <p><strong>3. Final Result:</strong></p>
+              <p>After 27 iterations: <code>DF(5Y) = 0.9640620</code></p>
+              <p>Zero rate (cc): 3.5606% (continuous)</p>
+              <p>Zero rate (annual): 3.6247% (annually-compounded)</p>
+            </div>
 
-        <h3>Visualization: NPV Function and Bisection Bracket</h3>
+            <h3>Visualization: NPV Function and Bisection Bracket</h3>
 
-        <p>
-          The bisection algorithm works because the IRS NPV function is <strong>monotonic</strong> in the terminal discount factor. Here's how to
-          visualize this:
-        </p>
+            <p>
+              The bisection algorithm works because the IRS NPV function is <strong>monotonic</strong> in the terminal discount factor. Here's how to
+              visualize this:
+            </p>
 
-        <pre><code class="language-python">import matplotlib.pyplot as plt
+            <pre><code class="language-python">import matplotlib.pyplot as plt
 
 # Select a tenor for visualization
 idx = data.index[data["Tenor"] == "5Y"][0]
@@ -1442,542 +1442,551 @@ plt.grid(True, alpha=0.3)
 plt.tight_layout()
 plt.show()</code></pre>
 
-        <h3>Advantages</h3>
-        <ul>
-          <li><strong>Educational:</strong> Every step is explicit and understandable</li>
-          <li><strong>Control:</strong> Fine-grained control over algorithm behavior</li>
-          <li><strong>Debugging:</strong> Easy to inspect intermediate states</li>
-          <li><strong>No Dependencies:</strong> Only requires rateslib for curve/IRS valuation, not for solving</li>
-        </ul>
-
-        <h3>Disadvantages</h3>
-        <ul>
-          <li><strong>Slower:</strong> Pure Python implementation, ~10-100x slower than optimized solver</li>
-          <li><strong>Bracket Finding:</strong> Requires defensive logic to find initial bracket</li>
-          <li><strong>Code Length:</strong> More code to write and maintain</li>
-          <li><strong>Error Handling:</strong> More places where things can go wrong</li>
-        </ul>
-      </section>
-
-      <!-- Method Comparison (Brief) -->
-      <section id="comparison">
-        <h2>Method 1 vs Method 2: Which to Use?</h2>
-
-        <p>
-          Both approaches produce <strong>numerically identical results</strong> when applied to the same market data. The choice between them depends
-          on your use case:
-        </p>
-
-        <h3>Quick Comparison</h3>
-
-        <table class="comparison-table">
-          <tr>
-            <th>Aspect</th>
-            <th>rateslib Solver</th>
-            <th>Manual Bisection</th>
-          </tr>
-          <tr>
-            <td class="feature-row"><strong>Purpose</strong></td>
-            <td>Production-ready curve building</td>
-            <td>Educational understanding of algorithm</td>
-          </tr>
-          <tr>
-            <td class="feature-row"><strong>Speed</strong></td>
-            <td><span class="yes">~0.5 sec (full curve)</span></td>
-            <td><span class="neutral">~5-10 sec (Python)</span></td>
-          </tr>
-          <tr>
-            <td class="feature-row"><strong>Transparency</strong></td>
-            <td>Black-box optimizer</td>
-            <td>Every step visible</td>
-          </tr>
-          <tr>
-            <td class="feature-row"><strong>Robustness</strong></td>
-            <td><span class="yes">Excellent</span></td>
-            <td><span class="yes">Good (with proper setup)</span></td>
-          </tr>
-          <tr>
-            <td class="feature-row"><strong>Learning Value</strong></td>
-            <td>Low (API-driven)</td>
-            <td>High (explicit algorithm)</td>
-          </tr>
-        </table>
-
-        <div class="key-insight">
-          <strong>Recommendation:</strong> Use <strong>Method 1 (rateslib)</strong> for production curve construction. Method 2 is primarily valuable
-          for understanding the bootstrap algorithm and debugging edge cases.
-        </div>
-      </section>
-
-      <!-- Results & Visualizations (Expanded) -->
-      <section id="results">
-        <h2>Results: Bootstrapped SOFR Curve & Analysis</h2>
-
-        <h3>Complete Curve Data: 2025-11-14</h3>
-
-        <p>
-          Below is the actual output from the bootstrapping process. The curve spans 88 tenors from 1 week to 50 years, fully capturing the term
-          structure of risk-free rates:
-        </p>
-
-        <table class="data-table">
-          <tr>
-            <th>Tenor</th>
-            <th>Par Rate (%)</th>
-            <th>DF</th>
-            <th>Zero (cc) (%)</th>
-            <th>Zero (annual) (%)</th>
-          </tr>
-          <tr>
-            <td>1W</td>
-            <td>3.9847</td>
-            <td>0.998784</td>
-            <td>3.9832</td>
-            <td>4.0636</td>
-          </tr>
-          <tr>
-            <td>1M</td>
-            <td>3.9751</td>
-            <td>0.996257</td>
-            <td>3.9703</td>
-            <td>4.0501</td>
-          </tr>
-          <tr>
-            <td>3M</td>
-            <td>3.8921</td>
-            <td>0.989713</td>
-            <td>3.8774</td>
-            <td>3.9536</td>
-          </tr>
-          <tr>
-            <td>6M</td>
-            <td>3.8045</td>
-            <td>0.980796</td>
-            <td>3.7732</td>
-            <td>3.8453</td>
-          </tr>
-          <tr>
-            <td>1Y</td>
-            <td>3.6208</td>
-            <td>0.964162</td>
-            <td>3.5606</td>
-            <td>3.6247</td>
-          </tr>
-          <tr>
-            <td>2Y</td>
-            <td>3.4119</td>
-            <td>0.933968</td>
-            <td>3.3487</td>
-            <td>3.4061</td>
-          </tr>
-          <tr>
-            <td>3Y</td>
-            <td>3.2849</td>
-            <td>0.905613</td>
-            <td>3.1918</td>
-            <td>3.2438</td>
-          </tr>
-          <tr>
-            <td>5Y</td>
-            <td>3.2154</td>
-            <td>0.856868</td>
-            <td>3.0648</td>
-            <td>3.1125</td>
-          </tr>
-          <tr>
-            <td>10Y</td>
-            <td>3.2418</td>
-            <td>0.727355</td>
-            <td>3.0566</td>
-            <td>3.1047</td>
-          </tr>
-          <tr>
-            <td>30Y</td>
-            <td>3.3175</td>
-            <td>0.365625</td>
-            <td>3.1069</td>
-            <td>3.1552</td>
-          </tr>
-          <tr>
-            <td colspan="5" class="muted"><strong>Complete curve includes all 88 tenors from 1W to 50Y</strong></td>
-          </tr>
-        </table>
-
-        <h3>Curve Characteristics & Interpretation</h3>
-
-        <h4>1. Term Structure Shape</h4>
-
-        <p>The SOFR curve as of November 14, 2025 exhibits a <strong>classic slightly-inverted-then-normalizing pattern</strong>:</p>
-
-        <ul>
-          <li><strong>Ultra-short (1W-1M):</strong> Tight clustering around 3.97-3.98%, reflecting the Fed funds rate regime</li>
-          <li><strong>Short-to-medium (3M-1Y):</strong> Steeper descent from 3.89% → 3.62%, indicating near-term rate expectations</li>
-          <li><strong>Medium-to-long (1Y-10Y):</strong> Gentle flattening as forward expectations stabilize</li>
-          <li><strong>Long end (10Y+):</strong> Further flattening, converging toward ~3.2%, suggesting long-term equilibrium estimate</li>
-        </ul>
-
-        <p class="key-insight">
-          <strong>Market Signal:</strong> The curve shape suggests market expectations for gradual rate cuts or stabilization in the 1-2 year horizon,
-          with long-term yields anchored near 3.1-3.2%.
-        </p>
-
-        <h4>2. Discount Factor Decay & Duration</h4>
-
-        <p>Discount factors exhibit monotonic decay (a no-arbitrage requirement):</p>
-
-        <table class="data-table">
-          <tr>
-            <th>Tenor</th>
-            <th>DF</th>
-            <th>Percent Discount</th>
-            <th>Interpretation</th>
-          </tr>
-          <tr>
-            <td>1W</td>
-            <td>0.998784</td>
-            <td>0.12%</td>
-            <td>Minimal discounting (very short horizon)</td>
-          </tr>
-          <tr>
-            <td>1Y</td>
-            <td>0.964162</td>
-            <td>3.58%</td>
-            <td>$1M received in 1Y is worth $964.2k today</td>
-          </tr>
-          <tr>
-            <td>5Y</td>
-            <td>0.856868</td>
-            <td>14.31%</td>
-            <td>$1M received in 5Y is worth $856.9k today</td>
-          </tr>
-          <tr>
-            <td>10Y</td>
-            <td>0.727355</td>
-            <td>27.26%</td>
-            <td>$1M received in 10Y is worth $727.4k today</td>
-          </tr>
-          <tr>
-            <td>30Y</td>
-            <td>0.365625</td>
-            <td>63.44%</td>
-            <td>$1M received in 30Y is worth only $365.6k today</td>
-          </tr>
-        </table>
-
-        <h4>3. Continuously vs Annually Compounded Rates</h4>
-
-        <p>The relationship between continuously and annually compounded rates follows the formula:</p>
-
-        <div class="math-block">$$r_{\text{annual}} = e^{r_c} - 1$$</div>
-
-        <p>For example, at 5Y:</p>
-
-        <ul>
-          <li><strong>Continuously-compounded:</strong> 3.0648% (used internally for interpolation)</li>
-          <li><strong>Annually-compounded:</strong> 3.1125% (quoted in markets)</li>
-          <li><strong>Difference:</strong> 0.0477%, or ~4.77 bps — typical for intermediate maturities</li>
-        </ul>
-
-        <h3>High-Resolution Visualizations</h3>
-
-        <p>The bootstrapping process generates publication-quality plots (600 dpi) in the <code>Plots/</code> directory:</p>
-
-        <h4>Plot 1: SOFR Yield Curve (SOFR_yield_curve_highres.png)</h4>
-
-        <div class="chart-container">
-          <img src="../Plots/SOFR_yield_curve_highres.png" alt="SOFR Yield Curve" />
-        </div>
-
-        <p><strong>Description:</strong></p>
-        <ul>
-          <li><strong>Blue continuous line:</strong> Interpolated zero rates via log-linear DF interpolation</li>
-          <li><strong>Red circular dots:</strong> Bootstrapped zero rates at each tenor's endpoint</li>
-          <li><strong>Black X markers:</strong> Market par swap rates (input data)</li>
-          <li><strong>Grid lines:</strong> Facilitate reading tenor and rate values</li>
-        </ul>
-
-        <p><strong>Key Insights from the Plot:</strong></p>
-        <ul>
-          <li>
-            <strong>Smooth interpolation:</strong> The blue curve smoothly connects bootstrapped nodes, confirming no kinks or arbitrage
-            discontinuities
-          </li>
-          <li>
-            <strong>Par vs Zero difference:</strong> Par rates (black X) are sometimes above/below zero rates (red dots) depending on curve slope —
-            mathematically expected
-          </li>
-          <li>
-            <strong>Curve concavity:</strong> The curve transitions from concave (short end) to nearly linear (long end), typical of normal markets
-          </li>
-          <li><strong>Flattening pattern:</strong> Visual confirmation of the flattening structure discussed above</li>
-        </ul>
-
-        <h4>Plot 2: NPV Function & Root (NPV_function.png)</h4>
-
-        <div class="chart-container">
-          <img src="../Plots/NPV_function.png" alt="NPV Function for 5Y IRS" />
-        </div>
-
-        <p><strong>Description:</strong></p>
-        <ul>
-          <li><strong>Blue curve:</strong> Net Present Value of a 5Y IRS as a function of DF(5Y)</li>
-          <li><strong>Red vertical line:</strong> DF* = 0.856868 (solution from bisection/solver)</li>
-          <li><strong>Green shaded region:</strong> NPV > 0 (positive PV when DF too low)</li>
-          <li><strong>Red shaded region:</strong> NPV < 0 (negative PV when DF too high)</li>
-          <li><strong>Horizontal dashed line:</strong> NPV = 0 (target)</li>
-        </ul>
-
-        <p><strong>Key Insights from the Plot:</strong></p>
-        <ul>
-          <li>
-            <strong>Monotonicity:</strong> The NPV curve is strictly monotonic (always decreasing), confirming why bisection is guaranteed to converge
-          </li>
-          <li><strong>Unique root:</strong> Exactly one crossing of NPV = 0, ensuring unique discount factor solution</li>
-          <li>
-            <strong>Algorithm illustration:</strong> The bisection bracket [DF_low, DF_high] straddles the root with opposite sign changes, enabling
-            binary search
-          </li>
-          <li>
-            <strong>Convergence guarantee:</strong> The smooth S-shaped curve ensures rapid convergence (~30 iterations to achieve 10^-10 accuracy)
-          </li>
-        </ul>
-
-        <h3>Practical Applications</h3>
-
-        <h4>Pricing Interest Rate Derivatives</h4>
-
-        <p>Once the curve is bootstrapped, it serves as the discount curve for any fixed income instrument:</p>
-
-        <p><strong>Example: Price a 3.5Y OIS swap with 3.00% fixed rate</strong></p>
-
-        <ol>
-          <li>
-            <strong>Interpolate DF(3.5Y):</strong> Use log-linear interpolation between 3Y [DF=0.9056] and 4Y [DF=0.8845] nodes → DF(3.5Y) ≈ 0.8948
-          </li>
-          <li><strong>Discount fixed coupons:</strong> $1M × 3% × DF(3.5Y) × (payment frequency factor)</li>
-          <li><strong>Discount floating coupons:</strong> Compound daily SOFR using bootstrap curve for each sub-period</li>
-          <li><strong>Compute NPV:</strong> PV(fixed) - PV(floating) = NPV relative to 3% par rate</li>
-        </ol>
-
-        <h4>Risk Management & Hedging</h4>
-
-        <p>From the bootstrapped curve, key risk metrics are derived:</p>
-
-        <ul>
-          <li>
-            <strong>DV01 (Dollar Value of 1 bps):</strong> Sensitivity of portfolio value to 1 bp parallel shift in the curve. For a $100M 5Y IRS,
-            DV01 ≈ $400-500 (depending on contract specifics)
-          </li>
-          <li>
-            <strong>Key Rate Durations:</strong> Sensitivity to curve shifts at specific tenors (e.g., "2Y Key Rate Duration") — enables "bucketing"
-            of risk
-          </li>
-          <li><strong>Curve Trades:</strong> Long curve / short curve, butterfly spreads, etc., based on expected curve shape changes</li>
-          <li><strong>Hedge Ratios:</strong> How many units of liquid benchmark swaps (e.g., 2Y, 5Y, 10Y) needed to neutralize directional risk</li>
-        </ul>
-
-        <h4>Model Calibration</h4>
-
-        <p>The bootstrapped curve serves as input to more complex models:</p>
-
-        <ul>
-          <li>
-            <strong>Short-rate models (Vasicek, CIR, Hull-White):</strong> Calibrate volatility and mean reversion to reproduce the bootstrapped curve
-          </li>
-          <li><strong>Forward rate models (HJM):</strong> Use curve and volatility surface to price exotic derivatives</li>
-          <li><strong>Multi-curve frameworks:</strong> Combine SOFR curve with basis curves (3M SOFR vs SOFR) for accurate cross-currency pricing</li>
-        </ul>
-
-        <h3>Sanity Checks & Quality Metrics</h3>
-
-        <p>To ensure the bootstrapped curve is accurate, several validation checks are performed:</p>
-
-        <table class="data-table">
-          <tr>
-            <th>Check</th>
-            <th>Method</th>
-            <th>Result</th>
-            <th>Status</th>
-          </tr>
-          <tr>
-            <td><strong>NPV of calibration IRSs</strong></td>
-            <td>Reprice each input IRS using bootstrap curve</td>
-            <td>Max |NPV| ~ 1e-10 $</td>
-            <td><span class="yes">✓ Pass</span></td>
-          </tr>
-          <tr>
-            <td><strong>Implied par rates</strong></td>
-            <td>Extract par rate from each IRS; compare to market</td>
-            <td>Max error ~ 0.0001 bps</td>
-            <td><span class="yes">✓ Pass</span></td>
-          </tr>
-          <tr>
-            <td><strong>DF monotonicity</strong></td>
-            <td>Check DF(t1) > DF(t2) for t1 < t2</td>
-            <td>All DFs strictly decreasing</td>
-            <td><span class="yes">✓ Pass</span></td>
-          </tr>
-          <tr>
-            <td><strong>Boundary conditions</strong></td>
-            <td>DF(today) = 1.0 ?</td>
-            <td>DF(2025-11-14) = 1.000000</td>
-            <td><span class="yes">✓ Pass</span></td>
-          </tr>
-          <tr>
-            <td><strong>Asymptotic behavior</strong></td>
-            <td>DF → 0 as t → ∞ ?</td>
-            <td>DF(50Y) = 0.0825 (approaching 0)</td>
-            <td><span class="yes">✓ Pass</span></td>
-          </tr>
-        </table>
-
-        <div class="highlight-box">
-          <strong>Conclusion:</strong> All quality metrics pass, confirming that the bootstrapped curve is mathematically sound, free of arbitrage,
-          and ready for production use.
-        </div>
-      </section>
-
-      <!-- Technical Details & Conventions -->
-      <section id="technical">
-        <h2>Technical Details & Conventions</h2>
-
-        <h3>Day Count Convention</h3>
-        <p>The project uses <strong>Actual/360 (Act/360)</strong> convention, which is standard for SOFR-based instruments:</p>
-        <div class="math-block">$$\text{Accrual} = N \times r \times \frac{\text{actual days}}{360}$$</div>
-        <p>For example, a 6-month (181 days) SOFR rate of 3.80%:</p>
-        <div class="math-block">$$\text{Accrual} = \$1,000,000 \times 0.038 \times \frac{181}{360} = \$19,117$$</div>
-
-        <h3>Calendar Convention</h3>
-        <p>All dates are adjusted using <strong>New York (NYSE) business day conventions</strong>:</p>
-        <ul>
-          <li><strong>Calendar:</strong> NYSE holidays (Christmas, Thanksgiving, etc.)</li>
-          <li>
-            <strong>Roll convention:</strong> Modified Following (MF) — if date falls on weekend/holiday, roll forward to next business day, but if
-            that crosses month boundary, roll back
-          </li>
-        </ul>
-
-        <h3>Settlement Convention</h3>
-        <p><strong>T+2 (Trade plus 2 business days)</strong> — standard for USD interest rate swaps. For a trade date of 2025-11-14 (Friday):</p>
-        <ul>
-          <li>2025-11-14: Trade date</li>
-          <li>2025-11-17: Monday (skip weekend)</li>
-          <li>2025-11-18: Tuesday (T+2 settlement)</li>
-        </ul>
-
-        <h3>Tenor Notation</h3>
-        <p>Tenors follow the convention:</p>
-        <ul>
-          <li><strong>nW:</strong> n weeks (1W, 2W, 3W)</li>
-          <li><strong>nM:</strong> n months (1M, 2M, ..., 35M)</li>
-          <li><strong>nY:</strong> n years (3Y, 4Y, ..., 50Y)</li>
-        </ul>
-
-        <h3>Dependencies & Versions</h3>
-        <table class="data-table">
-          <tr>
-            <th>Library</th>
-            <th>Purpose</th>
-            <th>Version</th>
-          </tr>
-          <tr>
-            <td><strong>rateslib</strong></td>
-            <td>Core: curve construction, IRS valuation, interpolation</td>
-            <td>2.1.1</td>
-          </tr>
-          <tr>
-            <td><strong>pandas</strong></td>
-            <td>Data manipulation (DataFrames, CSV I/O)</td>
-            <td>1.5+</td>
-          </tr>
-          <tr>
-            <td><strong>numpy</strong></td>
-            <td>Numerical computations (log, exp, interpolation)</td>
-            <td>1.20+</td>
-          </tr>
-          <tr>
-            <td><strong>matplotlib</strong></td>
-            <td>2D plotting (yield curves, NPV functions)</td>
-            <td>3.5+</td>
-          </tr>
-          <tr>
-            <td><strong>plotly</strong></td>
-            <td>Interactive 3D plots (optional, for advanced visualization)</td>
-            <td>5.0+</td>
-          </tr>
-        </table>
-
-        <p><strong>Python Version:</strong> 3.12.2 (tested and verified)</p>
-      </section>
-
-      <!-- Conclusion -->
-      <section id="conclusion">
-        <h2>Conclusion & Next Steps</h2>
-
-        <h3>Summary</h3>
-
-        <p>This document has covered the complete workflow for constructing SOFR OIS yield curves from market data:</p>
-
-        <ol>
-          <li><strong>Financial Foundation:</strong> Understanding discount factors, zero rates, and OIS swaps</li>
-          <li><strong>Mathematical Framework:</strong> Bootstrapping algorithm, log-linear interpolation, bisection root-finding</li>
-          <li><strong>Data Pipeline:</strong> From 88 Excel files to consolidated panel to bootstrapped curves</li>
-          <li>
-            <strong>Two Implementation Approaches:</strong>
+            <h3>Advantages</h3>
             <ul>
-              <li>rateslib Solver: Fast, robust, production-ready</li>
-              <li>Manual Bisection: Educational, transparent, debuggable</li>
+              <li><strong>Educational:</strong> Every step is explicit and understandable</li>
+              <li><strong>Control:</strong> Fine-grained control over algorithm behavior</li>
+              <li><strong>Debugging:</strong> Easy to inspect intermediate states</li>
+              <li><strong>No Dependencies:</strong> Only requires rateslib for curve/IRS valuation, not for solving</li>
             </ul>
-          </li>
-          <li><strong>Practical Results:</strong> Sample curves, visualizations, and sanity checks</li>
-        </ol>
 
-        <h3>Key Takeaways</h3>
+            <h3>Disadvantages</h3>
+            <ul>
+              <li><strong>Slower:</strong> Pure Python implementation, ~10-100x slower than optimized solver</li>
+              <li><strong>Bracket Finding:</strong> Requires defensive logic to find initial bracket</li>
+              <li><strong>Code Length:</strong> More code to write and maintain</li>
+              <li><strong>Error Handling:</strong> More places where things can go wrong</li>
+            </ul>
+          </section>
 
-        <ul>
-          <li><strong>No-arbitrage:</strong> Bootstrap exploits the NPV=0 property of par swaps to extract DFs sequentially</li>
-          <li><strong>Monotonicity:</strong> The IRS NPV function is monotonic in the terminal DF, guaranteeing bisection convergence</li>
-          <li>
-            <strong>Interpolation matters:</strong> Log-linear DF interpolation is both economically sensible and equivalent to linear zero rate
-            interpolation
-          </li>
-          <li><strong>Verification is critical:</strong> Always sanity-check using NPV of calibration instruments and implied par rates</li>
-        </ul>
+          <!-- Method Comparison (Brief) -->
+          <section id="comparison">
+            <h2>Method 1 vs Method 2: Which to Use?</h2>
 
-        <h3>Potential Extensions</h3>
+            <p>
+              Both approaches produce <strong>numerically identical results</strong> when applied to the same market data. The choice between them
+              depends on your use case:
+            </p>
 
-        <h4>1. Curve Smoothing</h4>
-        <p>Apply smoothing splines (e.g., smoothing cubic splines) to avoid kinks in the curve—useful when market quotes are noisy.</p>
+            <h3>Quick Comparison</h3>
 
-        <h4>2. Multi-Curve Framework</h4>
-        <p>Extend to build multiple curves simultaneously (SOFR curve + SOFR-forward curves) with cross-curve constraints.</p>
+            <table class="comparison-table">
+              <tr>
+                <th>Aspect</th>
+                <th>rateslib Solver</th>
+                <th>Manual Bisection</th>
+              </tr>
+              <tr>
+                <td class="feature-row"><strong>Purpose</strong></td>
+                <td>Production-ready curve building</td>
+                <td>Educational understanding of algorithm</td>
+              </tr>
+              <tr>
+                <td class="feature-row"><strong>Speed</strong></td>
+                <td><span class="yes">~0.5 sec (full curve)</span></td>
+                <td><span class="neutral">~5-10 sec (Python)</span></td>
+              </tr>
+              <tr>
+                <td class="feature-row"><strong>Transparency</strong></td>
+                <td>Black-box optimizer</td>
+                <td>Every step visible</td>
+              </tr>
+              <tr>
+                <td class="feature-row"><strong>Robustness</strong></td>
+                <td><span class="yes">Excellent</span></td>
+                <td><span class="yes">Good (with proper setup)</span></td>
+              </tr>
+              <tr>
+                <td class="feature-row"><strong>Learning Value</strong></td>
+                <td>Low (API-driven)</td>
+                <td>High (explicit algorithm)</td>
+              </tr>
+            </table>
 
-        <h4>3. Real-Time Updates</h4>
-        <p>Stream market quotes in real-time, update curves continuously, and monitor basis/carry in trading portfolios.</p>
+            <div class="key-insight">
+              <strong>Recommendation:</strong> Use <strong>Method 1 (rateslib)</strong> for production curve construction. Method 2 is primarily
+              valuable for understanding the bootstrap algorithm and debugging edge cases.
+            </div>
+          </section>
 
-        <h4>4. Machine Learning for Interpolation</h4>
-        <p>Train neural networks to learn interpolation patterns across dates and market regimes.</p>
+          <!-- Results & Visualizations (Expanded) -->
+          <section id="results">
+            <h2>Results: Bootstrapped SOFR Curve & Analysis</h2>
 
-        <h4>5. Stochastic Models</h4>
-        <p>Build short-rate or HJM models calibrated to this curve for interest rate derivative pricing.</p>
+            <h3>Complete Curve Data: 2025-11-14</h3>
 
-        <h3>Resources</h3>
+            <p>
+              Below is the actual output from the bootstrapping process. The curve spans 88 tenors from 1 week to 50 years, fully capturing the term
+              structure of risk-free rates:
+            </p>
 
-        <ul>
-          <li>
-            <strong>rateslib Documentation:</strong> <a href="https://rateslib.readthedocs.io" target="_blank">https://rateslib.readthedocs.io</a>
-          </li>
-          <li><strong>Bloomberg FINCAD:</strong> Industry-standard tool for curve construction</li>
-          <li><strong>Textbook:</strong> Brigo & Mercurio, "Interest Rate Models: Theory and Practice"</li>
-          <li><strong>Federal Reserve Data:</strong> SOFR rates published daily by the Fed</li>
-        </ul>
+            <table class="data-table">
+              <tr>
+                <th>Tenor</th>
+                <th>Par Rate (%)</th>
+                <th>DF</th>
+                <th>Zero (cc) (%)</th>
+                <th>Zero (annual) (%)</th>
+              </tr>
+              <tr>
+                <td>1W</td>
+                <td>3.9847</td>
+                <td>0.998784</td>
+                <td>3.9832</td>
+                <td>4.0636</td>
+              </tr>
+              <tr>
+                <td>1M</td>
+                <td>3.9751</td>
+                <td>0.996257</td>
+                <td>3.9703</td>
+                <td>4.0501</td>
+              </tr>
+              <tr>
+                <td>3M</td>
+                <td>3.8921</td>
+                <td>0.989713</td>
+                <td>3.8774</td>
+                <td>3.9536</td>
+              </tr>
+              <tr>
+                <td>6M</td>
+                <td>3.8045</td>
+                <td>0.980796</td>
+                <td>3.7732</td>
+                <td>3.8453</td>
+              </tr>
+              <tr>
+                <td>1Y</td>
+                <td>3.6208</td>
+                <td>0.964162</td>
+                <td>3.5606</td>
+                <td>3.6247</td>
+              </tr>
+              <tr>
+                <td>2Y</td>
+                <td>3.4119</td>
+                <td>0.933968</td>
+                <td>3.3487</td>
+                <td>3.4061</td>
+              </tr>
+              <tr>
+                <td>3Y</td>
+                <td>3.2849</td>
+                <td>0.905613</td>
+                <td>3.1918</td>
+                <td>3.2438</td>
+              </tr>
+              <tr>
+                <td>5Y</td>
+                <td>3.2154</td>
+                <td>0.856868</td>
+                <td>3.0648</td>
+                <td>3.1125</td>
+              </tr>
+              <tr>
+                <td>10Y</td>
+                <td>3.2418</td>
+                <td>0.727355</td>
+                <td>3.0566</td>
+                <td>3.1047</td>
+              </tr>
+              <tr>
+                <td>30Y</td>
+                <td>3.3175</td>
+                <td>0.365625</td>
+                <td>3.1069</td>
+                <td>3.1552</td>
+              </tr>
+              <tr>
+                <td colspan="5" class="muted"><strong>Complete curve includes all 88 tenors from 1W to 50Y</strong></td>
+              </tr>
+            </table>
 
-        <h3>Contact & Repository</h3>
+            <h3>Curve Characteristics & Interpretation</h3>
 
-        <p>For questions, contributions, or to access the full source code:</p>
+            <h4>1. Term Structure Shape</h4>
 
-        <a href="https://github.com/yourusername/Yield_curve" class="github-link" target="_blank"> 📊 View on GitHub </a>
-      </section>
+            <p>The SOFR curve as of November 14, 2025 exhibits a <strong>classic slightly-inverted-then-normalizing pattern</strong>:</p>
+
+            <ul>
+              <li><strong>Ultra-short (1W-1M):</strong> Tight clustering around 3.97-3.98%, reflecting the Fed funds rate regime</li>
+              <li><strong>Short-to-medium (3M-1Y):</strong> Steeper descent from 3.89% → 3.62%, indicating near-term rate expectations</li>
+              <li><strong>Medium-to-long (1Y-10Y):</strong> Gentle flattening as forward expectations stabilize</li>
+              <li><strong>Long end (10Y+):</strong> Further flattening, converging toward ~3.2%, suggesting long-term equilibrium estimate</li>
+            </ul>
+
+            <p class="key-insight">
+              <strong>Market Signal:</strong> The curve shape suggests market expectations for gradual rate cuts or stabilization in the 1-2 year
+              horizon, with long-term yields anchored near 3.1-3.2%.
+            </p>
+
+            <h4>2. Discount Factor Decay & Duration</h4>
+
+            <p>Discount factors exhibit monotonic decay (a no-arbitrage requirement):</p>
+
+            <table class="data-table">
+              <tr>
+                <th>Tenor</th>
+                <th>DF</th>
+                <th>Percent Discount</th>
+                <th>Interpretation</th>
+              </tr>
+              <tr>
+                <td>1W</td>
+                <td>0.998784</td>
+                <td>0.12%</td>
+                <td>Minimal discounting (very short horizon)</td>
+              </tr>
+              <tr>
+                <td>1Y</td>
+                <td>0.964162</td>
+                <td>3.58%</td>
+                <td>$1M received in 1Y is worth $964.2k today</td>
+              </tr>
+              <tr>
+                <td>5Y</td>
+                <td>0.856868</td>
+                <td>14.31%</td>
+                <td>$1M received in 5Y is worth $856.9k today</td>
+              </tr>
+              <tr>
+                <td>10Y</td>
+                <td>0.727355</td>
+                <td>27.26%</td>
+                <td>$1M received in 10Y is worth $727.4k today</td>
+              </tr>
+              <tr>
+                <td>30Y</td>
+                <td>0.365625</td>
+                <td>63.44%</td>
+                <td>$1M received in 30Y is worth only $365.6k today</td>
+              </tr>
+            </table>
+
+            <h4>3. Continuously vs Annually Compounded Rates</h4>
+
+            <p>The relationship between continuously and annually compounded rates follows the formula:</p>
+
+            <div class="math-block">$$r_{\text{annual}} = e^{r_c} - 1$$</div>
+
+            <p>For example, at 5Y:</p>
+
+            <ul>
+              <li><strong>Continuously-compounded:</strong> 3.0648% (used internally for interpolation)</li>
+              <li><strong>Annually-compounded:</strong> 3.1125% (quoted in markets)</li>
+              <li><strong>Difference:</strong> 0.0477%, or ~4.77 bps — typical for intermediate maturities</li>
+            </ul>
+
+            <h3>High-Resolution Visualizations</h3>
+
+            <p>The bootstrapping process generates publication-quality plots (600 dpi) in the <code>Plots/</code> directory:</p>
+
+            <h4>Plot 1: SOFR Yield Curve (SOFR_yield_curve_highres.png)</h4>
+
+            <div class="chart-container">
+              <img src="../Plots/SOFR_yield_curve_highres.png" alt="SOFR Yield Curve" />
+            </div>
+
+            <p><strong>Description:</strong></p>
+            <ul>
+              <li><strong>Blue continuous line:</strong> Interpolated zero rates via log-linear DF interpolation</li>
+              <li><strong>Red circular dots:</strong> Bootstrapped zero rates at each tenor's endpoint</li>
+              <li><strong>Black X markers:</strong> Market par swap rates (input data)</li>
+              <li><strong>Grid lines:</strong> Facilitate reading tenor and rate values</li>
+            </ul>
+
+            <p><strong>Key Insights from the Plot:</strong></p>
+            <ul>
+              <li>
+                <strong>Smooth interpolation:</strong> The blue curve smoothly connects bootstrapped nodes, confirming no kinks or arbitrage
+                discontinuities
+              </li>
+              <li>
+                <strong>Par vs Zero difference:</strong> Par rates (black X) are sometimes above/below zero rates (red dots) depending on curve slope
+                — mathematically expected
+              </li>
+              <li>
+                <strong>Curve concavity:</strong> The curve transitions from concave (short end) to nearly linear (long end), typical of normal
+                markets
+              </li>
+              <li><strong>Flattening pattern:</strong> Visual confirmation of the flattening structure discussed above</li>
+            </ul>
+
+            <h4>Plot 2: NPV Function & Root (NPV_function.png)</h4>
+
+            <div class="chart-container">
+              <img src="../Plots/NPV_function.png" alt="NPV Function for 5Y IRS" />
+            </div>
+
+            <p><strong>Description:</strong></p>
+            <ul>
+              <li><strong>Blue curve:</strong> Net Present Value of a 5Y IRS as a function of DF(5Y)</li>
+              <li><strong>Red vertical line:</strong> DF* = 0.856868 (solution from bisection/solver)</li>
+              <li><strong>Green shaded region:</strong> NPV > 0 (positive PV when DF too low)</li>
+              <li><strong>Red shaded region:</strong> NPV < 0 (negative PV when DF too high)</li>
+              <li><strong>Horizontal dashed line:</strong> NPV = 0 (target)</li>
+            </ul>
+
+            <p><strong>Key Insights from the Plot:</strong></p>
+            <ul>
+              <li>
+                <strong>Monotonicity:</strong> The NPV curve is strictly monotonic (always decreasing), confirming why bisection is guaranteed to
+                converge
+              </li>
+              <li><strong>Unique root:</strong> Exactly one crossing of NPV = 0, ensuring unique discount factor solution</li>
+              <li>
+                <strong>Algorithm illustration:</strong> The bisection bracket [DF_low, DF_high] straddles the root with opposite sign changes,
+                enabling binary search
+              </li>
+              <li>
+                <strong>Convergence guarantee:</strong> The smooth S-shaped curve ensures rapid convergence (~30 iterations to achieve 10^-10
+                accuracy)
+              </li>
+            </ul>
+
+            <h3>Practical Applications</h3>
+
+            <h4>Pricing Interest Rate Derivatives</h4>
+
+            <p>Once the curve is bootstrapped, it serves as the discount curve for any fixed income instrument:</p>
+
+            <p><strong>Example: Price a 3.5Y OIS swap with 3.00% fixed rate</strong></p>
+
+            <ol>
+              <li>
+                <strong>Interpolate DF(3.5Y):</strong> Use log-linear interpolation between 3Y [DF=0.9056] and 4Y [DF=0.8845] nodes → DF(3.5Y) ≈
+                0.8948
+              </li>
+              <li><strong>Discount fixed coupons:</strong> $1M × 3% × DF(3.5Y) × (payment frequency factor)</li>
+              <li><strong>Discount floating coupons:</strong> Compound daily SOFR using bootstrap curve for each sub-period</li>
+              <li><strong>Compute NPV:</strong> PV(fixed) - PV(floating) = NPV relative to 3% par rate</li>
+            </ol>
+
+            <h4>Risk Management & Hedging</h4>
+
+            <p>From the bootstrapped curve, key risk metrics are derived:</p>
+
+            <ul>
+              <li>
+                <strong>DV01 (Dollar Value of 1 bps):</strong> Sensitivity of portfolio value to 1 bp parallel shift in the curve. For a $100M 5Y IRS,
+                DV01 ≈ $400-500 (depending on contract specifics)
+              </li>
+              <li>
+                <strong>Key Rate Durations:</strong> Sensitivity to curve shifts at specific tenors (e.g., "2Y Key Rate Duration") — enables
+                "bucketing" of risk
+              </li>
+              <li><strong>Curve Trades:</strong> Long curve / short curve, butterfly spreads, etc., based on expected curve shape changes</li>
+              <li>
+                <strong>Hedge Ratios:</strong> How many units of liquid benchmark swaps (e.g., 2Y, 5Y, 10Y) needed to neutralize directional risk
+              </li>
+            </ul>
+
+            <h4>Model Calibration</h4>
+
+            <p>The bootstrapped curve serves as input to more complex models:</p>
+
+            <ul>
+              <li>
+                <strong>Short-rate models (Vasicek, CIR, Hull-White):</strong> Calibrate volatility and mean reversion to reproduce the bootstrapped
+                curve
+              </li>
+              <li><strong>Forward rate models (HJM):</strong> Use curve and volatility surface to price exotic derivatives</li>
+              <li>
+                <strong>Multi-curve frameworks:</strong> Combine SOFR curve with basis curves (3M SOFR vs SOFR) for accurate cross-currency pricing
+              </li>
+            </ul>
+
+            <h3>Sanity Checks & Quality Metrics</h3>
+
+            <p>To ensure the bootstrapped curve is accurate, several validation checks are performed:</p>
+
+            <table class="data-table">
+              <tr>
+                <th>Check</th>
+                <th>Method</th>
+                <th>Result</th>
+                <th>Status</th>
+              </tr>
+              <tr>
+                <td><strong>NPV of calibration IRSs</strong></td>
+                <td>Reprice each input IRS using bootstrap curve</td>
+                <td>Max |NPV| ~ 1e-10 $</td>
+                <td><span class="yes">✓ Pass</span></td>
+              </tr>
+              <tr>
+                <td><strong>Implied par rates</strong></td>
+                <td>Extract par rate from each IRS; compare to market</td>
+                <td>Max error ~ 0.0001 bps</td>
+                <td><span class="yes">✓ Pass</span></td>
+              </tr>
+              <tr>
+                <td><strong>DF monotonicity</strong></td>
+                <td>Check DF(t1) > DF(t2) for t1 < t2</td>
+                <td>All DFs strictly decreasing</td>
+                <td><span class="yes">✓ Pass</span></td>
+              </tr>
+              <tr>
+                <td><strong>Boundary conditions</strong></td>
+                <td>DF(today) = 1.0 ?</td>
+                <td>DF(2025-11-14) = 1.000000</td>
+                <td><span class="yes">✓ Pass</span></td>
+              </tr>
+              <tr>
+                <td><strong>Asymptotic behavior</strong></td>
+                <td>DF → 0 as t → ∞ ?</td>
+                <td>DF(50Y) = 0.0825 (approaching 0)</td>
+                <td><span class="yes">✓ Pass</span></td>
+              </tr>
+            </table>
+
+            <div class="highlight-box">
+              <strong>Conclusion:</strong> All quality metrics pass, confirming that the bootstrapped curve is mathematically sound, free of
+              arbitrage, and ready for production use.
+            </div>
+          </section>
+
+          <!-- Technical Details & Conventions -->
+          <section id="technical">
+            <h2>Technical Details & Conventions</h2>
+
+            <h3>Day Count Convention</h3>
+            <p>The project uses <strong>Actual/360 (Act/360)</strong> convention, which is standard for SOFR-based instruments:</p>
+            <div class="math-block">$$\text{Accrual} = N \times r \times \frac{\text{actual days}}{360}$$</div>
+            <p>For example, a 6-month (181 days) SOFR rate of 3.80%:</p>
+            <div class="math-block">$$\text{Accrual} = \$1,000,000 \times 0.038 \times \frac{181}{360} = \$19,117$$</div>
+
+            <h3>Calendar Convention</h3>
+            <p>All dates are adjusted using <strong>New York (NYSE) business day conventions</strong>:</p>
+            <ul>
+              <li><strong>Calendar:</strong> NYSE holidays (Christmas, Thanksgiving, etc.)</li>
+              <li>
+                <strong>Roll convention:</strong> Modified Following (MF) — if date falls on weekend/holiday, roll forward to next business day, but
+                if that crosses month boundary, roll back
+              </li>
+            </ul>
+
+            <h3>Settlement Convention</h3>
+            <p><strong>T+2 (Trade plus 2 business days)</strong> — standard for USD interest rate swaps. For a trade date of 2025-11-14 (Friday):</p>
+            <ul>
+              <li>2025-11-14: Trade date</li>
+              <li>2025-11-17: Monday (skip weekend)</li>
+              <li>2025-11-18: Tuesday (T+2 settlement)</li>
+            </ul>
+
+            <h3>Tenor Notation</h3>
+            <p>Tenors follow the convention:</p>
+            <ul>
+              <li><strong>nW:</strong> n weeks (1W, 2W, 3W)</li>
+              <li><strong>nM:</strong> n months (1M, 2M, ..., 35M)</li>
+              <li><strong>nY:</strong> n years (3Y, 4Y, ..., 50Y)</li>
+            </ul>
+
+            <h3>Dependencies & Versions</h3>
+            <table class="data-table">
+              <tr>
+                <th>Library</th>
+                <th>Purpose</th>
+                <th>Version</th>
+              </tr>
+              <tr>
+                <td><strong>rateslib</strong></td>
+                <td>Core: curve construction, IRS valuation, interpolation</td>
+                <td>2.1.1</td>
+              </tr>
+              <tr>
+                <td><strong>pandas</strong></td>
+                <td>Data manipulation (DataFrames, CSV I/O)</td>
+                <td>1.5+</td>
+              </tr>
+              <tr>
+                <td><strong>numpy</strong></td>
+                <td>Numerical computations (log, exp, interpolation)</td>
+                <td>1.20+</td>
+              </tr>
+              <tr>
+                <td><strong>matplotlib</strong></td>
+                <td>2D plotting (yield curves, NPV functions)</td>
+                <td>3.5+</td>
+              </tr>
+              <tr>
+                <td><strong>plotly</strong></td>
+                <td>Interactive 3D plots (optional, for advanced visualization)</td>
+                <td>5.0+</td>
+              </tr>
+            </table>
+
+            <p><strong>Python Version:</strong> 3.12.2 (tested and verified)</p>
+          </section>
+
+          <!-- Conclusion -->
+          <section id="conclusion">
+            <h2>Conclusion & Next Steps</h2>
+
+            <h3>Summary</h3>
+
+            <p>This document has covered the complete workflow for constructing SOFR OIS yield curves from market data:</p>
+
+            <ol>
+              <li><strong>Financial Foundation:</strong> Understanding discount factors, zero rates, and OIS swaps</li>
+              <li><strong>Mathematical Framework:</strong> Bootstrapping algorithm, log-linear interpolation, bisection root-finding</li>
+              <li><strong>Data Pipeline:</strong> From 88 Excel files to consolidated panel to bootstrapped curves</li>
+              <li>
+                <strong>Two Implementation Approaches:</strong>
+                <ul>
+                  <li>rateslib Solver: Fast, robust, production-ready</li>
+                  <li>Manual Bisection: Educational, transparent, debuggable</li>
+                </ul>
+              </li>
+              <li><strong>Practical Results:</strong> Sample curves, visualizations, and sanity checks</li>
+            </ol>
+
+            <h3>Key Takeaways</h3>
+
+            <ul>
+              <li><strong>No-arbitrage:</strong> Bootstrap exploits the NPV=0 property of par swaps to extract DFs sequentially</li>
+              <li><strong>Monotonicity:</strong> The IRS NPV function is monotonic in the terminal DF, guaranteeing bisection convergence</li>
+              <li>
+                <strong>Interpolation matters:</strong> Log-linear DF interpolation is both economically sensible and equivalent to linear zero rate
+                interpolation
+              </li>
+              <li><strong>Verification is critical:</strong> Always sanity-check using NPV of calibration instruments and implied par rates</li>
+            </ul>
+
+            <h3>Potential Extensions</h3>
+
+            <h4>1. Curve Smoothing</h4>
+            <p>Apply smoothing splines (e.g., smoothing cubic splines) to avoid kinks in the curve—useful when market quotes are noisy.</p>
+
+            <h4>2. Multi-Curve Framework</h4>
+            <p>Extend to build multiple curves simultaneously (SOFR curve + SOFR-forward curves) with cross-curve constraints.</p>
+
+            <h4>3. Real-Time Updates</h4>
+            <p>Stream market quotes in real-time, update curves continuously, and monitor basis/carry in trading portfolios.</p>
+
+            <h4>4. Machine Learning for Interpolation</h4>
+            <p>Train neural networks to learn interpolation patterns across dates and market regimes.</p>
+
+            <h4>5. Stochastic Models</h4>
+            <p>Build short-rate or HJM models calibrated to this curve for interest rate derivative pricing.</p>
+
+            <h3>Resources</h3>
+
+            <ul>
+              <li>
+                <strong>rateslib Documentation:</strong> <a href="https://rateslib.readthedocs.io" target="_blank">https://rateslib.readthedocs.io</a>
+              </li>
+              <li><strong>Bloomberg FINCAD:</strong> Industry-standard tool for curve construction</li>
+              <li><strong>Textbook:</strong> Brigo & Mercurio, "Interest Rate Models: Theory and Practice"</li>
+              <li><strong>Federal Reserve Data:</strong> SOFR rates published daily by the Fed</li>
+            </ul>
+
+            <h3>Contact & Repository</h3>
+
+            <p>For questions, contributions, or to access the full source code:</p>
+
+            <a href="https://github.com/yourusername/Yield_curve" class="github-link" target="_blank"> 📊 View on GitHub </a>
+          </section>
         </div>
       </div>
     </main>
@@ -1998,47 +2007,47 @@ plt.show()</code></pre>
       // Generate Table of Contents Dynamically
       // ============================================================================
       function generateTOC() {
-        const contentMain = document.querySelector('.content-main');
-        const sections = contentMain.querySelectorAll('section');
-        const tocList = document.getElementById('toc-list');
-        
+        const contentMain = document.querySelector(".content-main");
+        const sections = contentMain.querySelectorAll("section");
+        const tocList = document.getElementById("toc-list");
+
         sections.forEach((section) => {
-          const h2 = section.querySelector('h2');
+          const h2 = section.querySelector("h2");
           if (!h2) return;
-          
-          const li = document.createElement('li');
-          const a = document.createElement('a');
-          a.href = '#' + section.id;
+
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = "#" + section.id;
           a.textContent = h2.textContent;
-          a.className = 'level-1';
+          a.className = "level-1";
           a.dataset.sectionId = section.id;
-          
+
           li.appendChild(a);
-          
+
           // Add h3 subheadings
-          const h3s = section.querySelectorAll('h3');
+          const h3s = section.querySelectorAll("h3");
           if (h3s.length > 0) {
-            const subList = document.createElement('ul');
+            const subList = document.createElement("ul");
             h3s.forEach((h3) => {
-              const subLi = document.createElement('li');
-              const subA = document.createElement('a');
-              
+              const subLi = document.createElement("li");
+              const subA = document.createElement("a");
+
               // Generate unique ID if not present
               if (!h3.id) {
-                h3.id = 'heading-' + Math.random().toString(36).substr(2, 9);
+                h3.id = "heading-" + Math.random().toString(36).substr(2, 9);
               }
-              
-              subA.href = '#' + h3.id;
+
+              subA.href = "#" + h3.id;
               subA.textContent = h3.textContent;
-              subA.className = 'level-2';
+              subA.className = "level-2";
               subA.dataset.sectionId = section.id;
-              
+
               subLi.appendChild(subA);
               subList.appendChild(subLi);
             });
             li.appendChild(subList);
           }
-          
+
           tocList.appendChild(li);
         });
       }
@@ -2047,12 +2056,12 @@ plt.show()</code></pre>
       // Scroll Spy: Highlight Active Section in TOC
       // ============================================================================
       function updateActiveTOC() {
-        const contentMain = document.querySelector('.content-main');
-        const sections = contentMain.querySelectorAll('section');
-        const tocLinks = document.querySelectorAll('#toc-list a');
-        
+        const contentMain = document.querySelector(".content-main");
+        const sections = contentMain.querySelectorAll("section");
+        const tocLinks = document.querySelectorAll("#toc-list a");
+
         let activeSection = null;
-        
+
         // Find the section that's currently in view
         sections.forEach((section) => {
           const rect = section.getBoundingClientRect();
@@ -2061,12 +2070,12 @@ plt.show()</code></pre>
             activeSection = section.id;
           }
         });
-        
+
         // Update TOC links
         tocLinks.forEach((link) => {
-          link.classList.remove('active');
+          link.classList.remove("active");
           if (link.dataset.sectionId === activeSection) {
-            link.classList.add('active');
+            link.classList.add("active");
           }
         });
       }
@@ -2076,11 +2085,11 @@ plt.show()</code></pre>
       // ============================================================================
       function setupSmoothScroll() {
         document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-          anchor.addEventListener('click', function (e) {
+          anchor.addEventListener("click", function (e) {
             e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
+            const target = document.querySelector(this.getAttribute("href"));
             if (target) {
-              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              target.scrollIntoView({ behavior: "smooth", block: "start" });
             }
           });
         });
@@ -2089,13 +2098,13 @@ plt.show()</code></pre>
       // ============================================================================
       // Initialize on Page Load
       // ============================================================================
-      document.addEventListener('DOMContentLoaded', function () {
+      document.addEventListener("DOMContentLoaded", function () {
         generateTOC();
         setupSmoothScroll();
         updateActiveTOC();
-        
+
         // Update active section on scroll
-        window.addEventListener('scroll', updateActiveTOC, { passive: true });
+        window.addEventListener("scroll", updateActiveTOC, { passive: true });
       });
 
       // ============================================================================

@@ -42,3 +42,9 @@ Questo file riassume le operazioni effettuate per la configurazione del sito [th
 - **Rimozione Doppio Titolo**: Modificato il frontmatter in _pages/game-of-life.md passando da layout: page a layout: default. Questo rimuove l'intestazione predefinita di Jekyll (post-header) per lasciare esclusivamente l'header custom del gioco e spostarlo più in alto nella pagina.
 - [x] Updated CV data (_data/cv.yml) and assets/pdf/omar_tronelli_cv.pdf with new details
 - [x] Added SOFR OIS Yield Curve Complete HTML page to SOFR project
+
+## 11. Implementazione Sezione Open Source (Approvata)
+- **Asset**: Spostato il PDF della cheatsheet in assets/pdf e generata miniatura in assets/img.
+- **Dati**: Configurato _data/repositories.yml per includere solo la repository zsh-cheatsheet-macos.
+- **Layout**: Implementata una pagina opensource personalizzata con una card per la cheatsheet (miniatura linkata alla repo GitHub) affiancata alla GitHub Card ufficiale.
+- **Validazione**: Eseguito Prettier per garantire la conformità del codice.

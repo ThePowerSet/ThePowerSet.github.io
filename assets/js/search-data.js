@@ -59,12 +59,7 @@ ninja.data = [{
             window.open("https://medium.com/@al-folio/displaying-external-posts-on-your-al-folio-blog-b60a1d241a0a?source=rss-17feae71c3c4------2", "_blank");
           
         },
-      },{id: "books-the-godfather",
-          title: 'The Godfather',
-          description: "",
-          section: "Books",handler: () => {
-              window.location.href = "/books/the_godfather/";
-            },},{id: "projects-sofr-ois-yield-curve-construction",
+      },{id: "projects-sofr-ois-yield-curve-construction",
           title: 'SOFR OIS Yield Curve Construction',
           description: "A full pipeline to construct the SOFR OIS zero-coupon yield curve using Python.",
           section: "Projects",handler: () => {
@@ -89,16 +84,6 @@ ninja.data = [{
           description: "Collaborating on Gaussian Process Regression project, implementing custom kernels in GPFlow.",
           section: "Projects",handler: () => {
               window.location.href = "/projects/5_gaussian_processes/";
-            },},{id: "teachings-data-science-fundamentals",
-          title: 'Data Science Fundamentals',
-          description: "This course covers the foundational aspects of data science, including data collection, cleaning, analysis, and visualization. Students will learn practical skills for working with real-world datasets.",
-          section: "Teachings",handler: () => {
-              window.location.href = "/teachings/data-science-fundamentals/";
-            },},{id: "teachings-introduction-to-machine-learning",
-          title: 'Introduction to Machine Learning',
-          description: "This course provides an introduction to machine learning concepts, algorithms, and applications. Students will learn about supervised and unsupervised learning, model evaluation, and practical implementations.",
-          section: "Teachings",handler: () => {
-              window.location.href = "/teachings/introduction-to-machine-learning/";
             },},{
         id: 'social-cv',
         title: 'CV',

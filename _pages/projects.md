@@ -4,9 +4,11 @@ title: projects
 permalink: /projects/
 description: A collection of my academic and research projects.
 nav: true
-nav_order: 3
+nav_order: 2
 display_categories: [Academic Projects]
 horizontal: false
+_styles: >
+  .post-header { display: none; }
 ---
 
 <!-- pages/projects.md -->

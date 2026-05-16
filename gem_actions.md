@@ -48,3 +48,10 @@ Questo file riassume le operazioni effettuate per la configurazione del sito [th
 - **Dati**: Configurato _data/repositories.yml per includere solo la repository zsh-cheatsheet-macos.
 - **Layout**: Implementata una pagina opensource personalizzata con una card per la cheatsheet (miniatura linkata alla repo GitHub) affiancata alla GitHub Card ufficiale.
 - **Validazione**: Eseguito Prettier per garantire la conformità del codice.
+
+## 12. Ottimizzazione SEO e Pulizia Template
+- **Rimozione Contenuti Demo**: Eliminati tutti i file di esempio dalle cartelle _posts, _teachings, _books e _news.
+- **Eliminazione Pagine Inutili**: Rimosse le pagine fisiche per blog, books, news, publications e teaching che diluivano il segnale SEO.
+- **Configurazione Jekyll**: Disabilitato l'output delle collection 'books', 'news' e 'teachings' in _config.yml.
+- **Personalizzazione Metadati**: Sostituito il nome del blog e l'autore predefinito (Einstein) con "Omar Tronelli" e le keyword relative a Quant Finance e Financial Risk.
+- **Sincronizzazione**: Eseguito push su GitHub per aggiornare la sitemap live e rimuovere i link morti dai motori di ricerca.

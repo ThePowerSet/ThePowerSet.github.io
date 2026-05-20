@@ -55,3 +55,12 @@ Questo file riassume le operazioni effettuate per la configurazione del sito [th
 - **Configurazione Jekyll**: Disabilitato l'output delle collection 'books', 'news' e 'teachings' in _config.yml.
 - **Personalizzazione Metadati**: Sostituito il nome del blog e l'autore predefinito (Einstein) con "Omar Tronelli" e le keyword relative a Quant Finance e Financial Risk.
 - **Sincronizzazione**: Eseguito push su GitHub per aggiornare la sitemap live e rimuovere i link morti dai motori di ricerca.
+
+## 13. Rimozione Sezione Projects dal CV
+- **Dati CV**: Rimossa l'intera sezione 'Projects' da _data/cv.yml per semplificare il profilo professionale nel Curriculum Vitae.
+- **Dati JSONResume**: Rimossa la sezione 'projects' da assets/json/resume.json per mantenere la coerenza tra i formati, nonostante sia attualmente in uso solo RenderCV.
+- **Validazione**: Eseguito Prettier per garantire la conformità della formattazione.
+
+## 14. References Cliccabili
+- **Dati CV**: Aggiornata la sezione 'References' in _data/cv.yml utilizzando la sintassi Markdown per rendere gli URL cliccabili.
+- **Sincronizzazione JSON**: Aggiornate le referenze in assets/json/resume.json per corrispondere a quelle di Omar e rese cliccabili.

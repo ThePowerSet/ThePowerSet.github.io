@@ -34,34 +34,6 @@ cv:
           - "Thesis: 'Predictive Models for Exchange Rates'"
           - "Supervisor: Prof. Marco Di Pietro"
 
-    Projects:
-      - name: SOFR OIS Yield Curve Construction
-        summary: Designed and implemented a full pipeline to construct the SOFR OIS zero-coupon yield curve from par swap rates.
-        highlights:
-          - Developed a numerical bootstrapping framework to recover discount factors via a bisection root-finding algorithm.
-          - Derived zero rates and constructed a smooth, arbitrage-free term structure using log-linear interpolation.
-          - Implemented the complete calibration and visualization workflow in Python (rateslib).
-
-      - name: Option Pricing and Hedging with Greeks
-        summary: Derived the Black–Scholes–Merton option pricing formula using both replication and risk-neutral valuation.
-        highlights:
-          - Analyzed the Greeks and their application in risk management.
-          - Implemented hedging strategies, focusing on Gamma and Theta, and hedge performance for a short gamma trader.
-
-      - name: Volatility Forecasting
-        summary: Compared GARCH out-of-sample predictive accuracy, with ML models, for Euro Stoxx 50.
-        highlights:
-          - Focused on the development of an LSTM neural network.
-          - Evaluated the performance of one-step-ahead predictions.
-
-      - name: Applied Statistical Modeling
-        summary: Worked on applied statistics projects involving panel-data regression, cross-validation, LASSO model selection, kernel regression, clustering, and multiple regression analysis.
-
-      - name: Gaussian Processes
-        summary: Collaborating with Dr Francesca Panero and Dr Sahoko Ishida on a project involving Gaussian Process Regression.
-        highlights:
-          - Responsible for coding; implemented custom kernels in GPflow (TensorFlow-based library), with the goal of performing model selection.
-
     Skills:
       - name: Programming
         icon: fa-solid fa-code
@@ -97,6 +69,6 @@ cv:
 
     References:
       - name: Dr Francesca Panero
-        reference: Sapienza University of Rome, London School of Economics and Political Science. https://francescapanero.github.io/
+        reference: "Sapienza University of Rome, London School of Economics and Political Science. [https://francescapanero.github.io/](https://francescapanero.github.io/)"
       - name: Dr Sahoko Ishida
-        reference: University of Oxford. https://sahokoishida.github.io/
+        reference: "University of Oxford. [https://sahokoishida.github.io/](https://sahokoishida.github.io/)"

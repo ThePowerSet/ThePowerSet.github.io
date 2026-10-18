@@ -59,7 +59,12 @@ ninja.data = [{
             window.open("https://medium.com/@al-folio/displaying-external-posts-on-your-al-folio-blog-b60a1d241a0a?source=rss-17feae71c3c4------2", "_blank");
           
         },
-      },{id: "projects-sofr-ois-yield-curve-construction",
+      },{id: "projects-master-39-s-thesis",
+          title: 'Master&amp;#39;s Thesis',
+          description: "Counterparty Risk in a CDS Portfolio — CVA, Netting and Contagion. Sapienza University of Rome, October 2026.",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/0_master_thesis/";
+            },},{id: "projects-sofr-ois-yield-curve-construction",
           title: 'SOFR OIS Yield Curve Construction',
           description: "A full pipeline to construct the SOFR OIS zero-coupon yield curve using Python.",
           section: "Projects",handler: () => {

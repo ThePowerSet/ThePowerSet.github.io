@@ -1,0 +1,66 @@
+/*******************************************************************************
+ * Project pages: lead paragraph, stat strip, small notes
+ ******************************************************************************/
+
+.proj-lead {
+  font-size: 1.15rem;
+  line-height: 1.65;
+  margin: 0.5rem 0 1.5rem;
+}
+
+.proj-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 1.75rem 0 0.75rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.proj-stat {
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--global-divider-color);
+  border-radius: 0.5rem;
+  background-color: var(--global-card-bg-color);
+
+  b {
+    display: block;
+    font-size: 1.75rem;
+    font-weight: 500;
+    line-height: 1.15;
+    color: var(--global-theme-color);
+  }
+
+  span {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    line-height: 1.35;
+    color: var(--global-text-color-light);
+  }
+}
+
+.proj-meta {
+  font-size: 0.85rem;
+  color: var(--global-text-color-light);
+  margin-bottom: 2.25rem;
+}
+
+details.proj-note {
+  margin: 0.5rem 0 1.5rem;
+  padding: 0.6rem 1rem;
+  border-left: 3px solid var(--global-theme-color);
+  background-color: var(--global-code-bg-color);
+  border-radius: 0 0.25rem 0.25rem 0;
+
+  summary {
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  p {
+    margin: 0.75rem 0 0.25rem;
+  }
+}

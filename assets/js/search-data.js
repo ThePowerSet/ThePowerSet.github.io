@@ -66,7 +66,7 @@ ninja.data = [{
               window.location.href = "/projects/0_master_thesis/";
             },},{id: "projects-sofr-ois-yield-curve-construction",
           title: 'SOFR OIS Yield Curve Construction',
-          description: "A full pipeline to construct the SOFR OIS zero-coupon yield curve using Python.",
+          description: "From 86 swap quotes to a USD discount curve, solved with a library and with a bisection I wrote.",
           section: "Projects",handler: () => {
               window.location.href = "/projects/1_sofr_ois/";
             },},{id: "projects-volatility-forecasting",

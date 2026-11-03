@@ -3,7 +3,7 @@ layout: page
 title: "Probability and Stochastic Processes"
 description: "Problem sets in Python: convergence of random variables, Markov chains for credit-rating migration, and a card-shuffling experiment."
 img: assets/img/projects/probability_cover.png
-importance: 10
+importance: 9
 category: Academic Projects
 chart:
   plotly: true

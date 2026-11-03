@@ -3,7 +3,7 @@ layout: page
 title: "Credit Risk on US Mortgages"
 description: "A PD model, the Vasicek portfolio loss and an out-of-time validation, on 5 million loan-years of Freddie Mac mortgages."
 img: assets/img/projects/credit_risk_cover.png
-importance: 3
+importance: 4
 category: Academic Projects
 chart:
   plotly: true

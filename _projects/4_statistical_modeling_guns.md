@@ -3,7 +3,7 @@ layout: page
 title: "Statistical Modeling - Guns Panel Data"
 description: "State-level murder and robbery rates: robust OLS, kernel and local-polynomial regression, and variable selection with BIC and the lasso."
 img: assets/img/projects/guns_cover.png
-importance: 9
+importance: 8
 category: Academic Projects
 chart:
   plotly: true

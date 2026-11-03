@@ -3,7 +3,7 @@ layout: page
 title: "Gaussian Processes"
 description: "Experiments on model selection with additive and ANOVA Gaussian processes: the kernels, the data generators and the runs on a cluster."
 img: assets/img/projects/gaussian_processes_cover.png
-importance: 8
+importance: 7
 category: Academic Projects
 chart:
   plotly: true

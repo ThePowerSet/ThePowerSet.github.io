@@ -3,7 +3,7 @@ layout: page
 title: "Time Series: Non-ergodic AR(1) and EUR/USD"
 description: "A process that is stationary but not ergodic, simulated and proved, and a forecasting exercise on EUR/USD where nothing is left to forecast."
 img: assets/img/projects/time_series_cover.png
-importance: 5
+importance: 6
 category: Academic Projects
 chart:
   plotly: true

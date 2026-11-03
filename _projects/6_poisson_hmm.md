@@ -3,7 +3,7 @@ layout: page
 title: "Market Regimes with a Poisson HMM"
 description: "A hidden Markov model for the daily number of S&P 500 stocks falling more than 5%, written from the likelihood up in R, with a count-based VaR."
 img: assets/img/projects/poisson_hmm_cover.png
-importance: 4
+importance: 5
 category: Academic Projects
 chart:
   plotly: true

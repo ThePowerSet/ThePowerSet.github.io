@@ -3,7 +3,7 @@ layout: page
 title: "GTBR: Gamma–Theta Break-even Range"
 description: "Where gamma and theta cancel for a delta-hedged option, and a breakout rule built on it, tested on SPY with the VIX."
 img: assets/img/projects/gtbr_cover.png
-importance: 2
+importance: 3
 category: Academic Projects
 chart:
   plotly: true

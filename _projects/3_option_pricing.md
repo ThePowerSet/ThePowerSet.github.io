@@ -3,7 +3,7 @@ layout: page
 title: "Option Pricing and Hedging with Greeks"
 description: "Black–Scholes priced three ways, the Greeks by finite differences, and the point where gamma P&L meets theta: the hedging section of a group paper."
 img: assets/img/projects/option_pricing_cover.png
-importance: 6
+importance: 2
 category: Academic Projects
 chart:
   plotly: true

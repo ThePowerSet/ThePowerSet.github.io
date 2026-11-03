@@ -61,9 +61,14 @@ ninja.data = [{
         },
       },{id: "projects-master-39-s-thesis",
           title: 'Master&amp;#39;s Thesis',
-          description: "Counterparty Risk in a CDS Portfolio — CVA, Netting and Contagion. Sapienza University of Rome, October 2026.",
+          description: "Counterparty Risk in a CDS Portfolio: CVA, Netting and Contagion. Sapienza University of Rome, October 2026.",
           section: "Projects",handler: () => {
               window.location.href = "/projects/0_master_thesis/";
+            },},{id: "projects-probability-and-stochastic-processes",
+          title: 'Probability and Stochastic Processes',
+          description: "Problem sets in Python: convergence of random variables, Markov chains for credit-rating migration, and a card-shuffling experiment.",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/10_probability/";
             },},{id: "projects-sofr-ois-yield-curve-construction",
           title: 'SOFR OIS Yield Curve Construction',
           description: "From 86 swap quotes to a USD discount curve, solved with a library and with a bisection I wrote.",
@@ -76,19 +81,39 @@ ninja.data = [{
               window.location.href = "/projects/2_volatility_forecasting/";
             },},{id: "projects-option-pricing-and-hedging-with-greeks",
           title: 'Option Pricing and Hedging with Greeks',
-          description: "Derived Black–Scholes–Merton formula and implemented hedging strategies.",
+          description: "Black–Scholes priced three ways, the Greeks by finite differences, and the point where gamma P&amp;L meets theta: the hedging section of a group paper.",
           section: "Projects",handler: () => {
               window.location.href = "/projects/3_option_pricing/";
             },},{id: "projects-statistical-modeling-guns-panel-data",
           title: 'Statistical Modeling - Guns Panel Data',
-          description: "Analyzed U.S. Guns panel data applying regression methods for explanatory purposes.",
+          description: "State-level murder and robbery rates: robust OLS, kernel and local-polynomial regression, and variable selection with BIC and the lasso.",
           section: "Projects",handler: () => {
               window.location.href = "/projects/4_statistical_modeling_guns/";
             },},{id: "projects-gaussian-processes",
           title: 'Gaussian Processes',
-          description: "Collaborating on Gaussian Process Regression project, implementing custom kernels in GPFlow.",
+          description: "Experiments on model selection with additive and ANOVA Gaussian processes: the kernels, the data generators and the runs on a cluster.",
           section: "Projects",handler: () => {
               window.location.href = "/projects/5_gaussian_processes/";
+            },},{id: "projects-market-regimes-with-a-poisson-hmm",
+          title: 'Market Regimes with a Poisson HMM',
+          description: "A hidden Markov model for the daily number of S&amp;P 500 stocks falling more than 5%, written from the likelihood up in R, with a count-based VaR.",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/6_poisson_hmm/";
+            },},{id: "projects-credit-risk-on-us-mortgages",
+          title: 'Credit Risk on US Mortgages',
+          description: "A PD model, the Vasicek portfolio loss and an out-of-time validation, on 5 million loan-years of Freddie Mac mortgages.",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/7_credit_risk/";
+            },},{id: "projects-time-series-non-ergodic-ar-1-and-eur-usd",
+          title: 'Time Series: Non-ergodic AR(1) and EUR/USD',
+          description: "A process that is stationary but not ergodic, simulated and proved, and a forecasting exercise on EUR/USD where nothing is left to forecast.",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/8_time_series/";
+            },},{id: "projects-gtbr-gamma-theta-break-even-range",
+          title: 'GTBR: Gamma–Theta Break-even Range',
+          description: "Where gamma and theta cancel for a delta-hedged option, and a breakout rule built on it, tested on SPY with the VIX.",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/9_gtbr/";
             },},{
         id: 'social-cv',
         title: 'CV',

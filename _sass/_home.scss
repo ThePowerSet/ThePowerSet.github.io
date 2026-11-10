@@ -1,0 +1,295 @@
+/*******************************************************************************
+ * Home page: hero, labelled sections, selected projects, contact
+ ******************************************************************************/
+
+.home {
+  // Hero
+
+  .hero {
+    position: relative;
+    margin-top: -3rem; // the backdrop starts right under the navigation bar
+    padding: 5.5rem 0 5rem;
+
+    @media (max-width: 767px) {
+      padding: 4rem 0 3rem;
+    }
+  }
+
+  // Full-bleed layer behind the hero, holding the simulated paths
+  .hero-backdrop {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    overflow: hidden;
+    border-bottom: 1px solid var(--global-divider-color);
+    pointer-events: none;
+  }
+
+  .hero-paths {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.75;
+    // the paths fade out towards the text
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.25) 45%, #000 100%);
+    mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.25) 45%, #000 100%);
+
+    // on a narrow screen the text takes the full width: keep the paths faint
+    @media (max-width: 767px) {
+      opacity: 0.3;
+    }
+  }
+
+  .hero-inner {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 250px;
+    align-items: center;
+    gap: 3.5rem;
+
+    @media (max-width: 767px) {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 2.5rem;
+    }
+  }
+
+  .hero-text {
+    margin-bottom: 0;
+
+    .eyebrow {
+      letter-spacing: 0;
+      text-transform: none;
+      text-wrap: balance;
+      font-size: 0.8rem;
+    }
+  }
+
+  .hero-title {
+    margin-bottom: 1.5rem;
+    font-size: clamp(3rem, 9vw, 5.25rem);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    line-height: 0.98;
+
+    em {
+      font-weight: 300;
+      color: var(--global-theme-color);
+    }
+  }
+
+  .hero-lead p {
+    max-width: 36rem;
+    margin-bottom: 2rem;
+    font-size: 1.15rem;
+    line-height: 1.65;
+    color: var(--global-text-color-light);
+
+    strong {
+      font-weight: 500;
+      color: var(--global-text-color);
+    }
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-social {
+    display: flex;
+    gap: 1.1rem;
+    margin-left: 0.75rem;
+    font-size: 1.3rem;
+
+    a {
+      i::before {
+        color: var(--global-text-color-light);
+        transition: color 0.2s ease;
+      }
+
+      &:hover {
+        text-decoration: none;
+
+        i::before {
+          color: var(--global-theme-color);
+        }
+      }
+    }
+  }
+
+  .hero-portrait {
+    position: relative;
+    max-width: 250px;
+
+    @media (max-width: 767px) {
+      max-width: 170px;
+    }
+
+    figure {
+      margin: 0;
+    }
+
+    img {
+      display: block;
+      border: 1px solid var(--global-divider-color);
+      border-radius: 1.25rem;
+      box-shadow: var(--global-card-shadow);
+    }
+
+    // an offset frame behind the picture
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border: 1px solid var(--global-accent-color);
+      border-radius: 1.25rem;
+      transform: translate(12px, 12px);
+    }
+
+    figure,
+    .more-info {
+      position: relative;
+    }
+  }
+
+  // Sections: the heading is a label in the left column, its text runs on the right
+
+  .about-sections {
+    display: grid;
+    grid-template-columns: 11rem minmax(0, 1fr);
+    column-gap: 2.5rem;
+    margin-top: 4.5rem;
+
+    > * {
+      grid-column: 2;
+    }
+
+    > h4 {
+      grid-column: 1;
+      margin: 0;
+      padding-top: 1.6rem;
+      border-top: 1px solid var(--global-divider-color);
+      font-family: var(--global-font-mono);
+      font-size: 0.74rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      line-height: 1.9;
+      text-transform: uppercase;
+      color: var(--global-text-color-light);
+    }
+
+    // the paragraph beside a heading carries the other half of the rule
+    > h4 + * {
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--global-divider-color);
+    }
+
+    > p {
+      max-width: 40rem;
+      margin-bottom: 1.1rem;
+      font-size: 1.05rem;
+
+      &:has(+ h4) {
+        margin-bottom: 2.25rem;
+      }
+    }
+
+    @media (max-width: 767px) {
+      grid-template-columns: minmax(0, 1fr);
+
+      > *,
+      > h4 {
+        grid-column: 1;
+      }
+
+      > h4 + * {
+        padding-top: 0.5rem;
+        border-top: 0;
+      }
+    }
+  }
+
+  // Selected projects
+
+  .home-projects {
+    margin-top: 5.5rem;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+
+    h2 {
+      margin: 0;
+      font-size: 2.1rem;
+    }
+  }
+
+  .section-link {
+    font-family: var(--global-font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    i {
+      margin-left: 0.3rem;
+      color: inherit;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover {
+      text-decoration: none;
+
+      i {
+        transform: translateX(4px);
+      }
+    }
+  }
+
+  // Contact
+
+  .home-contact {
+    margin-top: 6rem;
+    text-align: center;
+
+    .home-contact-email {
+      display: inline-block;
+      margin-bottom: 1.25rem;
+      font-family: var(--global-font-serif);
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      letter-spacing: -0.015em;
+      color: var(--global-text-color);
+      text-decoration: underline;
+      text-decoration-color: var(--global-accent-color);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 6px;
+
+      &:hover {
+        color: var(--global-theme-color);
+      }
+    }
+
+    .contact-icons {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-bottom: 0.75rem;
+      font-size: 1.6rem;
+    }
+
+    .contact-note {
+      font-size: 0.85rem;
+      color: var(--global-text-color-light);
+    }
+  }
+}

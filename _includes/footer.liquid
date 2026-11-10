@@ -24,7 +24,14 @@
     {% endif %}
 
     <div class="container">
-      {{ footer_contents }}
+      <div class="footer-top">
+        <a class="footer-brand" href="{{ '/' | relative_url }}">
+          <span class="font-weight-bold">{{ site.first_name }}</span> {{ site.middle_name }}
+          {{ site.last_name }}
+        </a>
+        <div class="footer-social contact-icons">{% social_links %}</div>
+      </div>
+      <div class="footer-note">{{ footer_contents }}</div>
     </div>
   </footer>
 {% endif %}

@@ -38,3 +38,7 @@
 @use "font-awesome/brands";
 @use "font-awesome/solid";
 @use "font-awesome/regular";
+
+// Site redesign: loaded last so it wins over the theme defaults
+@use "redesign";
+@use "home";

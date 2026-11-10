@@ -2,17 +2,20 @@
  * Project pages: lead paragraph, stat strip, small notes
  ******************************************************************************/
 
+@use "variables" as v;
+
 .proj-lead {
-  font-size: 1.15rem;
-  line-height: 1.65;
-  margin: 0.5rem 0 1.5rem;
+  font-family: var(--global-font-serif);
+  font-size: 1.35rem;
+  line-height: 1.55;
+  margin: 0.5rem 0 1.75rem;
 }
 
 .proj-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  margin: 1.75rem 0 0.75rem;
+  gap: 0.9rem;
+  margin: 2rem 0 0.9rem;
 
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -20,40 +23,58 @@
 }
 
 .proj-stat {
-  padding: 0.9rem 1.1rem;
+  position: relative;
+  padding: 1.1rem 1.1rem 1rem;
   border: 1px solid var(--global-divider-color);
-  border-radius: 0.5rem;
+  border-radius: 0.85rem;
   background-color: var(--global-card-bg-color);
+  overflow: hidden;
+
+  // a short rule in the accent colour above each figure
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 1.1rem;
+    width: 1.75rem;
+    height: 2px;
+    background-color: var(--global-accent-color);
+  }
 
   b {
     display: block;
-    font-size: 1.75rem;
+    font-family: var(--global-font-serif);
+    font-size: 1.9rem;
     font-weight: 500;
+    font-variant-numeric: lining-nums tabular-nums;
+    letter-spacing: -0.01em;
     line-height: 1.15;
     color: var(--global-theme-color);
   }
 
   span {
     display: block;
-    margin-top: 0.25rem;
-    font-size: 0.85rem;
-    line-height: 1.35;
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+    line-height: 1.4;
     color: var(--global-text-color-light);
   }
 }
 
 .proj-meta {
-  font-size: 0.85rem;
+  font-family: var(--global-font-mono);
+  font-size: 0.74rem;
+  line-height: 1.6;
   color: var(--global-text-color-light);
-  margin-bottom: 2.25rem;
+  margin-bottom: 2.5rem;
 }
 
 details.proj-note {
   margin: 0.5rem 0 1.5rem;
-  padding: 0.6rem 1rem;
+  padding: 0.7rem 1.1rem;
   border-left: 3px solid var(--global-theme-color);
   background-color: var(--global-code-bg-color);
-  border-radius: 0 0.25rem 0.25rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
 
   summary {
     cursor: pointer;
@@ -65,8 +86,53 @@ details.proj-note {
   }
 }
 
+// Previous and next project, at the foot of a project page
+.project-pager {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--global-divider-color);
+
+  @media (max-width: 576px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.project-pager-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--global-divider-color);
+  border-radius: 0.85rem;
+  background-color: var(--global-card-bg-color);
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    text-decoration: none;
+    border-color: var(--global-theme-color);
+    transform: translateY(-2px);
+  }
+
+  &.project-pager-next {
+    text-align: right;
+    align-items: flex-end;
+  }
+}
+
+.project-pager-title {
+  font-family: var(--global-font-serif);
+  font-size: 1.2rem;
+  line-height: 1.25;
+  color: var(--global-text-color);
+}
+
 /*******************************************************************************
- * Projects index: the grid is wider than the text column, cards are lower
+ * Projects index: the grid is wider than the text column
  ******************************************************************************/
 
 .projects {
@@ -76,25 +142,238 @@ details.proj-note {
   width: min(1280px, 100vw - 4rem);
   transform: translateX(-50%);
 
-  .card {
-    .card-img-top {
-      padding: 0.75rem 1rem 0;
+  @media (max-width: 576px) {
+    width: calc(100vw - 2rem);
+  }
+
+  h2.category {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: 0 0 1.25rem;
+    padding: 0 0 0.75rem;
+    border-bottom: 1px solid var(--global-divider-color);
+    font-family: var(--global-font-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-align: left;
+    text-transform: uppercase;
+    color: var(--global-text-color-light);
+
+    .category-count {
+      color: var(--global-accent-color);
+    }
+  }
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  counter-reset: project;
+
+  @media (max-width: 991px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.project-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  counter-increment: project;
+  border: 1px solid var(--global-divider-color);
+  border-radius: 1rem;
+  background-color: var(--global-card-bg-color);
+  overflow: hidden;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: var(--global-theme-color);
+    box-shadow: var(--global-card-shadow);
+
+    .project-card-more i {
+      transform: translateX(4px);
+    }
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+}
+
+.project-card-link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  color: inherit;
+}
+
+.project-card-media {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 2 / 1;
+  padding: 1.5rem 1.25rem 0.75rem;
+  border-bottom: 1px solid var(--global-divider-color);
+  // graph paper behind the cover
+  background-image: radial-gradient(var(--global-divider-color) 1px, transparent 1px);
+  background-size: 16px 16px;
+  background-position: 8px 8px;
+
+  figure {
+    width: 100%;
+    margin: 0;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  // the place of the project in the list
+  .project-card-link > &::after {
+    content: counter(project, decimal-leading-zero);
+    position: absolute;
+    top: 0.7rem;
+    left: 0.95rem;
+    font-family: var(--global-font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    color: var(--global-text-color-light);
+  }
+
+  // a screenshot fills the frame, on white whatever the theme
+  &.project-card-media-photo {
+    padding: 0;
+    background: #{v.$white-color};
+
+    img {
+      position: absolute;
+      inset: 0;
+      object-fit: cover;
+      object-position: top;
+    }
+  }
+}
+
+// A project without a cover shows its number instead
+.project-card-plain .project-card-link > .project-card-media::before {
+  content: counter(project, decimal-leading-zero);
+  font-family: var(--global-font-serif);
+  font-size: 4.5rem;
+  font-style: italic;
+  line-height: 1;
+  color: var(--global-divider-color);
+}
+
+.project-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1.2rem 1.4rem 1.3rem;
+}
+
+.project-card-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.45rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--global-text-color);
+
+  a {
+    color: inherit;
+  }
+}
+
+.project-card-text {
+  margin: 0 0 1.1rem;
+  font-size: 0.93rem;
+  line-height: 1.55;
+  color: var(--global-text-color-light);
+}
+
+.project-card-more {
+  margin-top: auto;
+  font-family: var(--global-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--global-theme-color);
+
+  i {
+    margin-left: 0.3rem;
+    color: inherit;
+    transition: transform 0.2s ease;
+  }
+}
+
+.project-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.project-card-repo {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.9rem;
+}
+
+// The first project of the index takes two columns, cover beside the text
+@media (min-width: 992px) {
+  .project-grid-lead > .project-card:first-child {
+    grid-column: span 2;
+
+    .project-card-link {
+      flex-direction: row;
     }
 
-    .card-body {
-      padding: 0.75rem 1.25rem 1.1rem;
+    .project-card-media {
+      flex: 0 0 52%;
+      aspect-ratio: auto;
+      padding: 2rem 1.5rem;
+      border-bottom: 0;
+      border-right: 1px solid var(--global-divider-color);
     }
 
-    .card-title {
-      font-size: 1.45rem;
-      line-height: 1.25;
-      margin-bottom: 0.5rem;
+    .project-card-body {
+      justify-content: center;
+      padding: 1.75rem 1.9rem;
     }
 
-    .card-text {
-      font-size: 0.95rem;
-      line-height: 1.5;
-      margin-bottom: 0;
+    .project-card-title {
+      font-size: 2.1rem;
     }
+
+    .project-card-text {
+      font-size: 1.02rem;
+    }
+
+    .project-card-more {
+      margin-top: 0.5rem;
+    }
+  }
+}
+
+// The opensource page keeps to the text column, two cards a row
+.repositories .project-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  @media (max-width: 640px) {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

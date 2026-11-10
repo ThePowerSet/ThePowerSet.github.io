@@ -17,12 +17,11 @@
   --btn-primary-hover: var(--global-hover-color);
   --btn-secondary: var(--global-card-bg-color);
   --btn-secondary-hover: var(--global-code-bg-color);
-  --border-radius: 4px;
+  --border-radius: 10px;
   --transition: all 0.2s ease;
 
-  background-color: var(--bg-dark);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+  font-family: var(--global-font-sans);
   font-size: 14px;
   line-height: 1.6;
   width: 100%;
@@ -40,16 +39,17 @@
   }
 
   .title {
-    font-size: 2.5em;
-    font-weight: 700;
+    font-size: 3em;
+    font-weight: 500;
     margin-bottom: 8px;
-    letter-spacing: 1px;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
   }
 
   .subtitle {
     font-size: 1em;
     color: var(--text-secondary);
-    font-weight: 300;
+    font-weight: 400;
   }
 
   /* Info Section */
@@ -62,7 +62,7 @@
     padding: 10px 15px;
     background-color: var(--btn-secondary);
     color: var(--text-primary);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid var(--cell-grid);
     border-radius: var(--border-radius);
     font-size: 14px;
     cursor: pointer;
@@ -80,7 +80,7 @@
 
   /* Info Box */
   .info-box {
-    background-color: rgba(124, 255, 138, 0.08);
+    background-color: var(--btn-secondary-hover);
     border-left: 3px solid var(--btn-primary);
     padding: 15px;
     border-radius: var(--border-radius);
@@ -107,7 +107,8 @@
 
   .pattern-label {
     color: var(--text-secondary);
-    font-size: 14px;
+    font-family: var(--global-font-mono);
+    font-size: 12px;
     white-space: nowrap;
   }
 
@@ -120,13 +121,15 @@
   .btn {
     padding: 10px 20px;
     border: none;
-    border-radius: var(--border-radius);
-    font-size: 14px;
-    font-weight: 600;
+    border-radius: 999px;
+    box-shadow: none !important;
+    font-family: var(--global-font-mono);
+    font-size: 12px;
+    font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.06em;
   }
 
   .btn:focus {
@@ -134,32 +137,35 @@
     outline-offset: 2px;
   }
 
+  // !important: the MDB button colours are declared that way
   .btn-primary {
-    background-color: var(--btn-primary);
-    color: var(--bg-dark);
+    background-color: var(--btn-primary) !important;
+    color: var(--bg-dark) !important;
   }
 
   .btn-primary:hover {
-    background-color: var(--btn-primary-hover);
+    background-color: var(--btn-primary-hover) !important;
     transform: translateY(-2px);
   }
 
   .btn-secondary {
-    background-color: var(--btn-secondary);
-    color: var(--text-primary);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background-color: var(--btn-secondary) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--cell-grid);
   }
 
   .btn-secondary:hover {
-    background-color: var(--btn-secondary-hover);
+    background-color: var(--btn-secondary) !important;
+    border-color: var(--btn-primary);
+    color: var(--btn-primary) !important;
   }
 
   .btn-action {
     background-color: var(--btn-secondary);
     color: var(--text-primary);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 8px 16px;
-    font-size: 13px;
+    border: 1px solid var(--cell-grid);
+    padding: 9px 20px;
+    font-size: 12px;
   }
 
   .btn-action:hover {
@@ -174,8 +180,8 @@
     justify-content: center;
     margin-bottom: 25px;
     border: 1px solid var(--cell-grid);
-    border-radius: var(--border-radius);
-    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    background-color: var(--bg-dark);
     overflow: hidden;
   }
 
@@ -209,16 +215,21 @@
   }
 
   .speed-control label {
-    font-size: 14px;
-    font-weight: 600;
+    margin: 0;
+    font-family: var(--global-font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
     white-space: nowrap;
   }
 
   .slider {
     width: 150px;
-    height: 6px;
-    border-radius: 3px;
-    background: linear-gradient(to right, var(--btn-secondary), var(--cell-alive));
+    height: 2px;
+    border-radius: 1px;
+    background: var(--cell-grid);
     outline: none;
     -webkit-appearance: none;
     appearance: none;
@@ -233,7 +244,8 @@
     border-radius: 50%;
     background: var(--cell-alive);
     cursor: pointer;
-    box-shadow: 0 0 8px var(--cell-alive);
+    border: 3px solid var(--bg-dark);
+    box-shadow: 0 0 0 1px var(--cell-alive);
   }
 
   .slider::-moz-range-thumb {
@@ -242,12 +254,15 @@
     border-radius: 50%;
     background: var(--cell-alive);
     cursor: pointer;
-    border: none;
-    box-shadow: 0 0 8px var(--cell-alive);
+    border: 3px solid var(--bg-dark);
+    box-shadow: 0 0 0 1px var(--cell-alive);
   }
 
   .generation-counter {
-    font-size: 14px;
+    font-family: var(--global-font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--text-secondary);
     white-space: nowrap;
   }
@@ -278,9 +293,9 @@
   }
 
   .modal-content {
-    background-color: var(--bg-dark);
-    border: 1px solid var(--btn-primary);
-    border-radius: var(--border-radius);
+    background-color: var(--btn-secondary);
+    border: 1px solid var(--cell-grid);
+    border-radius: 16px;
     padding: 30px;
     width: 80%;
     max-width: 600px;
@@ -323,14 +338,19 @@
   }
 
   .zoom-control label {
-    font-size: 14px;
-    font-weight: 600;
+    margin: 0;
+    font-family: var(--global-font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
     white-space: nowrap;
   }
 
   .modal-content h2,
   .modal-content h3 {
-    color: var(--btn-primary);
+    color: var(--text-primary);
     margin-bottom: 15px;
   }
 

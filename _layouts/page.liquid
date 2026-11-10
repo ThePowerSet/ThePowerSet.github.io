@@ -8,8 +8,30 @@ layout: default
   </style>
 {% endif %}
 
+{% comment %} Project pages link back to the index and on to their neighbours, in the order of the index {% endcomment %}
+{% if page.collection == 'projects' %}
+  {% assign sorted_projects = site.projects | sort: 'importance' %}
+  {% for project in sorted_projects %}
+    {% if project.url == page.url %}
+      {% assign project_index = forloop.index0 %}
+    {% endif %}
+  {% endfor %}
+  {% assign previous_index = project_index | minus: 1 %}
+  {% assign next_index = project_index | plus: 1 %}
+  {% if project_index > 0 %}
+    {% assign previous_project = sorted_projects[previous_index] %}
+  {% endif %}
+  {% assign next_project = sorted_projects[next_index] %}
+{% endif %}
+
 <div class="post">
   <header class="post-header">
+    {% if page.collection == 'projects' %}
+      <a class="eyebrow post-back" href="{{ '/projects/' | relative_url }}">
+        <i class="fa-solid fa-arrow-left"></i>
+        {% if page.category %}{{ page.category }}{% else %}Projects{% endif %}
+      </a>
+    {% endif %}
     <h1 class="post-title">{{ page.title }}</h1>
     <p class="post-description">{{ page.description }}</p>
   </header>
@@ -17,6 +39,25 @@ layout: default
   <article>
     {{ content }}
   </article>
+
+  {% if previous_project or next_project %}
+    <nav class="project-pager" aria-label="Other projects">
+      {% if previous_project %}
+        <a class="project-pager-link" href="{{ previous_project.url | relative_url }}">
+          <span class="eyebrow"><i class="fa-solid fa-arrow-left"></i> Previous</span>
+          <span class="project-pager-title">{{ previous_project.title }}</span>
+        </a>
+      {% else %}
+        <span></span>
+      {% endif %}
+      {% if next_project %}
+        <a class="project-pager-link project-pager-next" href="{{ next_project.url | relative_url }}">
+          <span class="eyebrow">Next <i class="fa-solid fa-arrow-right"></i></span>
+          <span class="project-pager-title">{{ next_project.title }}</span>
+        </a>
+      {% endif %}
+    </nav>
+  {% endif %}
 
   {% if page.related_publications %}
     <h2>References</h2>

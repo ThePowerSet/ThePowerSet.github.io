@@ -1,44 +1,89 @@
 ---
 layout: default
 ---
-<div class="post">
-  <header class="post-header">
-    <h1 class="post-title">
-      {% if site.title == 'blank' %}
-        <span class="font-weight-bold">{{ site.first_name }}</span> {{ site.middle_name }}
-        {{ site.last_name }}
-      {% else %}
-        {{ site.title }}
-      {% endif %}
-    </h1>
-    <p class="desc">{{ page.subtitle }}</p>
-  </header>
+{% comment %}
+  The text above the first horizontal rule of the page becomes the hero lead;
+  the rest is laid out as the labelled sections below it.
+{% endcomment %}
+{% assign content_parts = content | split: '<hr />' %}
+{% if content_parts.size > 1 %}
+  {% assign lead = content_parts | first %}
+  {% assign body = content | remove_first: lead | remove_first: '<hr />' %}
+{% else %}
+  {% assign lead = '' %}
+  {% assign body = content %}
+{% endif %}
 
-  <article>
-    {% if page.profile %}
-      <div class="profile float-{% if page.profile.align == 'left' %}left{% else %}right{% endif %}">
-        {% if page.profile.image %}
+<div class="post home">
+  <section class="hero">
+    <div class="hero-backdrop" aria-hidden="true">
+      <canvas class="hero-paths"></canvas>
+    </div>
+
+    <div class="hero-inner">
+      <header class="hero-text post-header">
+        <p class="eyebrow desc">{{ page.subtitle }}</p>
+        <h1 class="post-title hero-title">
+          {% if site.title == 'blank' %}
+            {{ site.first_name }}
+            {{ site.middle_name }}
+            <em>{{ site.last_name }}</em>
+          {% else %}
+            {{ site.title }}
+          {% endif %}
+        </h1>
+        <div class="hero-lead">{{ lead }}</div>
+        <div class="hero-actions">
+          <a class="btn-pill btn-pill-primary" href="{{ '/projects/' | relative_url }}"> Projects <i class="fa-solid fa-arrow-right"></i> </a>
+          <a class="btn-pill" href="{{ '/cv/' | relative_url }}">Curriculum vitae</a>
+          {% if page.social %}
+            <div class="hero-social contact-icons">{% social_links %}</div>
+          {% endif %}
+        </div>
+      </header>
+
+      {% if page.profile and page.profile.image %}
+        <div class="hero-portrait">
           {% assign profile_image_path = page.profile.image | prepend: 'assets/img/' %}
           {% if page.profile.image_circular %}
-            {% assign profile_image_class = 'img-fluid z-depth-1 rounded-circle' %}
+            {% assign profile_image_class = 'img-fluid rounded-circle' %}
           {% else %}
-            {% assign profile_image_class = 'img-fluid z-depth-1
-      rounded' %}
+            {% assign profile_image_class = 'img-fluid' %}
           {% endif %}
-          {% capture sizes %}(min-width: {{ site.max_width }}) {{ site.max_width | minus: 30 | times: 0.3}}px, (min-width: 576px)
-      30vw, 95vw"{% endcapture %}
           {%
-            include figure.liquid loading="eager" path=profile_image_path class=profile_image_class sizes=sizes alt=page.profile.image
-            cache_bust=true
+            include figure.liquid loading="eager" path=profile_image_path class=profile_image_class sizes="(min-width: 768px) 280px, 60vw"
+            alt=page.profile.image cache_bust=true
           %}
-        {% endif %}
-        {% if page.profile.more_info %}
-          <div class="more-info">{{ page.profile.more_info }}</div>
-        {% endif %}
-      </div>
-    {% endif %}
+          {% if page.profile.more_info %}
+            <div class="more-info">{{ page.profile.more_info }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </section>
 
-    <div class="clearfix">{{ content }}</div>
+  <article>
+    <section class="about-sections reveal">{{ body }}</section>
+
+    <!-- Selected projects -->
+    {% assign featured_projects = site.projects | sort: 'importance' %}
+    {% if featured_projects.size > 0 %}
+      <section class="home-projects reveal">
+        <div class="projects">
+          <div class="section-heading">
+            <h2>Selected projects</h2>
+            <a class="section-link" href="{{ '/projects/' | relative_url }}">
+              All {{ featured_projects.size }} projects <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+          <div class="project-grid">
+            {% for project in featured_projects limit: 3 %}
+              {% include projects.liquid %}
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    {% endif %}
 
     <!-- News -->
     {% if page.announcements and page.announcements.enabled %}
@@ -66,15 +111,13 @@ layout: default
 
     <!-- Social -->
     {% if page.social %}
-      <div class="social">
+      <section class="social home-contact reveal">
+        {% if site.data.socials.email %}
+          <a class="home-contact-email" href="mailto:{{ site.data.socials.email }}">{{ site.data.socials.email }}</a>
+        {% endif %}
         <div class="contact-icons">{% social_links %}</div>
-
         <div class="contact-note">{{ site.contact_note }}</div>
-      </div>
-    {% endif %}
-
-    {% if site.newsletter and site.newsletter.enabled and site.footer_fixed %}
-      {% include newsletter.liquid center=true %}
+      </section>
     {% endif %}
   </article>
 </div>

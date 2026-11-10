@@ -289,7 +289,7 @@ function drawGrid() {
   const gridW = cols * cellSize;
   const gridH = rows * cellSize;
 
-  ctx.strokeStyle = "rgba(124, 255, 138, 0.12)";
+  ctx.strokeStyle = getGridColor();
   ctx.lineWidth = 1;
 
   // Draw vertical lines

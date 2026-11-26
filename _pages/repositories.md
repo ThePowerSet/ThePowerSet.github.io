@@ -30,11 +30,11 @@ _styles: >
     </article>
     <!-- Cheatsheet with Thumbnail linked to Repo -->
     <article class="project-card">
-      <a class="project-card-media project-card-media-photo" href="https://github.com/ThePowerSet/zsh-cheatsheet-macos" target="_blank">
+      <a class="project-card-media project-card-media-photo" href="{{ '/assets/pdf/macOS_cheatsheet.pdf' | relative_url }}" target="_blank">
         <img src="{{ '/assets/img/zsh_cheatsheet_thumb.png' | relative_url }}" alt="zsh cheatsheet">
       </a>
       <div class="project-card-body">
-        <h2 class="project-card-title"><a href="https://github.com/ThePowerSet/zsh-cheatsheet-macos" target="_blank">Zsh Shortcuts for macOS</a></h2>
+        <h2 class="project-card-title"><a href="{{ '/assets/pdf/macOS_cheatsheet.pdf' | relative_url }}" target="_blank">Zsh Shortcuts for macOS</a></h2>
         <p class="project-card-text">A comprehensive cheatsheet for Zsh terminal shortcuts on macOS.</p>
         <div class="project-card-actions">
           <a href="{{ '/assets/pdf/macOS_cheatsheet.pdf' | relative_url }}" class="btn-pill btn-pill-small" target="_blank">View PDF</a>
@@ -44,11 +44,11 @@ _styles: >
     </article>
     <!-- WhisperX Notebook -->
     <article class="project-card">
-      <a class="project-card-media" href="https://github.com/ThePowerSet/whisperx-colab" target="_blank">
+      <a class="project-card-media" href="https://colab.research.google.com/github/ThePowerSet/whisperx-colab/blob/main/whisper2.ipynb" target="_blank">
         <img src="{{ '/assets/img/whisperx_thumb.png' | relative_url }}" alt="WhisperX Notebook" onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/d/d0/Google_Colaboratory_SVG_Logo.svg';">
       </a>
       <div class="project-card-body">
-        <h2 class="project-card-title"><a href="https://github.com/ThePowerSet/whisperx-colab" target="_blank">WhisperX Colab Notebook</a></h2>
+        <h2 class="project-card-title"><a href="https://colab.research.google.com/github/ThePowerSet/whisperx-colab/blob/main/whisper2.ipynb" target="_blank">WhisperX Colab Notebook</a></h2>
         <p class="project-card-text">A ready-to-use Google Colab notebook for fast audio transcription and diarization.</p>
         <div class="project-card-actions">
           <a href="https://colab.research.google.com/github/ThePowerSet/whisperx-colab/blob/main/whisper2.ipynb" class="btn-pill btn-pill-small" target="_blank">Open in Colab</a>
@@ -59,3 +59,5 @@ _styles: >
   </div>
   {% endif %}
 </div>
+
+<script defer src="{{ '/assets/js/palestra-theme-link.js' | relative_url }}"></script>

@@ -1,0 +1,1 @@
+document.querySelectorAll('a[href^="https://palestra-opal.vercel.app"]').forEach(e=>{const t=()=>{const t=document.documentElement.getAttribute("data-theme-setting")||"system",r=new URL(e.href);r.searchParams.set("tema",t),e.href=r.toString()};["pointerdown","focus","click"].forEach(r=>e.addEventListener(r,t))});

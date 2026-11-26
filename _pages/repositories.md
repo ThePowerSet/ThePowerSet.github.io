@@ -12,6 +12,22 @@ _styles: >
 <div class="repositories">
   {% if site.data.repositories.github_repos %}
   <div class="project-grid">
+    <!-- Palestra: the app runs on Vercel, the code is on GitHub -->
+    <article class="project-card">
+      <a class="project-card-media project-card-media-photo" href="https://palestra-opal.vercel.app" target="_blank">
+        <!-- one picture per theme, swapped by the site's .only-light and .only-dark classes -->
+        <img class="only-light" src="{{ '/assets/img/palestra_thumb.png' | relative_url }}" alt="Palestra, the programme page: one trick at a time">
+        <img class="only-dark" src="{{ '/assets/img/palestra_thumb_dark.png' | relative_url }}" alt="Palestra, the programme page: one trick at a time">
+      </a>
+      <div class="project-card-body">
+        <h2 class="project-card-title"><a href="https://palestra-opal.vercel.app" target="_blank">Palestra</a></h2>
+        <p class="project-card-text">Mental maths drills I built while preparing for trading interviews: a short lesson for each trick, exercises with hints, spaced review and timed tests, in English and Italian.</p>
+        <div class="project-card-actions">
+          <a href="https://palestra-opal.vercel.app" class="btn-pill btn-pill-small" target="_blank">Open the app</a>
+          <a href="https://github.com/ThePowerSet/palestra" class="btn-pill btn-pill-small" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a>
+        </div>
+      </div>
+    </article>
     <!-- Cheatsheet with Thumbnail linked to Repo -->
     <article class="project-card">
       <a class="project-card-media project-card-media-photo" href="https://github.com/ThePowerSet/zsh-cheatsheet-macos" target="_blank">
